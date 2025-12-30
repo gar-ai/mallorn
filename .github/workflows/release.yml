@@ -25,6 +25,7 @@ jobs:
         uses: arduino/setup-protoc@v3
         with:
           version: "25.x"
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Build wheels
         uses: PyO3/maturin-action@v1
         with:
@@ -53,6 +54,7 @@ jobs:
         uses: arduino/setup-protoc@v3
         with:
           version: "25.x"
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Build wheels
         uses: PyO3/maturin-action@v1
         with:
@@ -81,6 +83,7 @@ jobs:
         uses: arduino/setup-protoc@v3
         with:
           version: "25.x"
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Build wheels
         uses: PyO3/maturin-action@v1
         with:
@@ -102,6 +105,7 @@ jobs:
         uses: arduino/setup-protoc@v3
         with:
           version: "25.x"
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Build sdist
         uses: PyO3/maturin-action@v1
         with:

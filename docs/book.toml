@@ -3,7 +3,6 @@ title = "Mallorn"
 description = "Edge model delta updates for TFLite, GGUF, and ONNX models"
 authors = ["Mallorn Contributors"]
 language = "en"
-multilingual = false
 src = "src"
 
 [build]

@@ -182,6 +182,7 @@ impl Fingerprint {
 
 /// Detect model format from file path
 #[derive(Debug, Clone, Copy, PartialEq)]
+#[allow(clippy::upper_case_acronyms)]
 enum ModelFormat {
     TFLite,
     GGUF,
@@ -250,6 +251,7 @@ fn detect_model_format(path: &Path, data: &[u8]) -> PyResult<ModelFormat> {
 
 /// Detect patch format from magic bytes
 #[derive(Debug, Clone, Copy, PartialEq)]
+#[allow(clippy::upper_case_acronyms)]
 enum PatchFormat {
     TFLite,
     GGUF,
@@ -795,8 +797,8 @@ pub fn fingerprint(model_path: &str) -> PyResult<Fingerprint> {
 
     // Create combined hash by XOR-ing header and tail hashes
     let mut combined = [0u8; 16];
-    for i in 0..16 {
-        combined[i] = fp.header_hash[i] ^ fp.tail_hash[i];
+    for (i, byte) in combined.iter_mut().enumerate() {
+        *byte = fp.header_hash[i] ^ fp.tail_hash[i];
     }
 
     Ok(Fingerprint {
