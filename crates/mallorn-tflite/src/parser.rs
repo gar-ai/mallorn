@@ -212,7 +212,7 @@ impl TFLiteParser {
         }
 
         // Parse version (field 0)
-        let version = if field_offsets.len() > 0 && field_offsets[0] != 0 {
+        let version = if !field_offsets.is_empty() && field_offsets[0] != 0 {
             read_u32(data, model_pos + field_offsets[0] as usize)?
         } else {
             3 // Default TFLite version

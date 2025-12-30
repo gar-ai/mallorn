@@ -347,13 +347,7 @@ fn find_buffer_offset(raw_data: &[u8], buffer: &[u8]) -> Option<usize> {
     }
 
     // Simple linear search for buffer content
-    for i in 0..=(raw_data.len() - buffer.len()) {
-        if &raw_data[i..i + buffer.len()] == buffer {
-            return Some(i);
-        }
-    }
-
-    None
+    (0..=(raw_data.len() - buffer.len())).find(|&i| &raw_data[i..i + buffer.len()] == buffer)
 }
 
 #[cfg(test)]

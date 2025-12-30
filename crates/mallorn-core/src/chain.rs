@@ -348,7 +348,7 @@ pub fn subchain(chain: &PatchChain, from_hash: &[u8; 32], to_hash: &[u8; 32]) ->
         return None;
     }
 
-    let mut new_chain = PatchChain::new(&format!("{}_subset", chain.chain_id));
+    let mut new_chain = PatchChain::new(format!("{}_subset", chain.chain_id));
     new_chain.metadata = ChainMetadata {
         base_version: links.first().and_then(|l| l.link_metadata.source_version.clone()),
         head_version: links.last().and_then(|l| l.link_metadata.target_version.clone()),

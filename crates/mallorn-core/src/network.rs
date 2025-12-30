@@ -39,7 +39,7 @@ pub enum NetworkError {
 
 impl From<NetworkError> for PatchError {
     fn from(e: NetworkError) -> Self {
-        PatchError::Io(std::io::Error::new(std::io::ErrorKind::Other, e.to_string()))
+        PatchError::Io(std::io::Error::other(e.to_string()))
     }
 }
 

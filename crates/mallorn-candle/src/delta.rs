@@ -71,7 +71,7 @@ impl GpuDelta {
         }
 
         // Pad to block boundary
-        let padded_len = ((old.len() + block_size - 1) / block_size) * block_size;
+        let padded_len = old.len().div_ceil(block_size) * block_size;
         let mut old_padded = old.to_vec();
         let mut new_padded = new.to_vec();
         old_padded.resize(padded_len, 0);

@@ -212,7 +212,7 @@ fn download_http(
         pb.set_position(downloaded);
 
         // Update state periodically (every 1MB)
-        if downloaded % (1024 * 1024) == 0 {
+        if downloaded.is_multiple_of(1024 * 1024) {
             let updated_state = DownloadState {
                 url: url.to_string(),
                 downloaded: start_byte + downloaded,

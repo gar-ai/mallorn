@@ -67,7 +67,7 @@ pub fn fingerprint(data: &[u8]) -> Fingerprint {
     let tail_hash = hex::encode(&tail_hasher.finalize()[..16]);
 
     // Combine for short ID
-    let short_id = format!("{}", &header_hash[..8]);
+    let short_id = (&header_hash[..8]).to_string();
 
     Fingerprint {
         file_size,

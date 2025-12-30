@@ -323,7 +323,7 @@ impl NeuralCompressor {
 
     /// Compress float32 data, choosing sparse or dense path based on sparsity
     fn compress_f32(&self, data: &[u8]) -> Result<Vec<u8>, CompressionError> {
-        if data.len() % 4 != 0 {
+        if !data.len().is_multiple_of(4) {
             return Err(CompressionError::InvalidData);
         }
 
@@ -530,7 +530,7 @@ impl NeuralCompressor {
 
     /// Compress float16 data with byte-plane separation
     fn compress_f16(&self, data: &[u8]) -> Result<Vec<u8>, CompressionError> {
-        if data.len() % 2 != 0 {
+        if !data.len().is_multiple_of(2) {
             return Err(CompressionError::InvalidData);
         }
 

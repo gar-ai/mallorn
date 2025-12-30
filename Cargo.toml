@@ -67,7 +67,7 @@ indicatif = "0.17"
 anyhow = "1"
 
 # Python bindings (abi3-py38 for forward compatibility with Python 3.8+)
-pyo3 = { version = "0.23", features = ["extension-module", "abi3-py38"] }
+pyo3 = { version = "0.24", features = ["extension-module", "abi3-py38"] }
 
 # Error handling
 thiserror = "1"

@@ -95,7 +95,7 @@ pub fn apply_patch(model: &[u8], patch: &[u8]) -> Result<PatchResult, WasmError>
     Ok(PatchResult {
         data: new_model,
         source_hash: hex::encode(expected_source_hash),
-        target_hash: hex::encode(&actual_target_hash),
+        target_hash: hex::encode(actual_target_hash),
         success,
     })
 }

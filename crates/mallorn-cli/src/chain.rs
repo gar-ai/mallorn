@@ -224,11 +224,11 @@ pub fn extract(
     // Determine which links to extract
     let links_to_extract: Vec<_> = if from_hash.is_some() || to_hash.is_some() {
         let from = from_hash
-            .map(|h| parse_hash(h))
+            .map(parse_hash)
             .transpose()?
             .or_else(|| chain.base_hash());
         let to = to_hash
-            .map(|h| parse_hash(h))
+            .map(parse_hash)
             .transpose()?
             .or_else(|| chain.head_hash());
 
@@ -346,11 +346,11 @@ pub fn squash(
     // Determine which links to squash
     let links_to_squash: Vec<_> = if from_hash.is_some() || to_hash.is_some() {
         let from = from_hash
-            .map(|h| parse_hash(h))
+            .map(parse_hash)
             .transpose()?
             .or_else(|| chain.base_hash());
         let to = to_hash
-            .map(|h| parse_hash(h))
+            .map(parse_hash)
             .transpose()?
             .or_else(|| chain.head_hash());
 
