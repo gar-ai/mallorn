@@ -3,14 +3,13 @@
 //! Benchmarks using actual MobileNet models to measure real-world performance.
 
 use criterion::{criterion_group, criterion_main, BenchmarkId, Criterion, Throughput};
-use mallorn_tflite::{TFLiteDiffer, TFLitePatcher, TFLiteParser};
+use mallorn_tflite::{TFLiteDiffer, TFLiteParser, TFLitePatcher};
 use std::fs;
 use std::path::PathBuf;
 
 fn get_fixtures_path() -> PathBuf {
     // Get the manifest directory and navigate to fixtures
-    let manifest = std::env::var("CARGO_MANIFEST_DIR")
-        .unwrap_or_else(|_| ".".to_string());
+    let manifest = std::env::var("CARGO_MANIFEST_DIR").unwrap_or_else(|_| ".".to_string());
     PathBuf::from(manifest)
         .join("..")
         .join("..")

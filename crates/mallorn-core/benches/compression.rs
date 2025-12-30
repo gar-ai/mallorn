@@ -48,9 +48,7 @@ fn bench_compression(c: &mut Criterion) {
             group.bench_with_input(
                 BenchmarkId::new(format!("zstd_l{}_compress", level), size),
                 &weight_data,
-                |b, data| {
-                    b.iter(|| compressor.compress(black_box(data), DataType::Float32))
-                },
+                |b, data| b.iter(|| compressor.compress(black_box(data), DataType::Float32)),
             );
         }
 
@@ -59,9 +57,7 @@ fn bench_compression(c: &mut Criterion) {
         group.bench_with_input(
             BenchmarkId::new("lz4_compress", size),
             &weight_data,
-            |b, data| {
-                b.iter(|| lz4.compress(black_box(data), DataType::Float32))
-            },
+            |b, data| b.iter(|| lz4.compress(black_box(data), DataType::Float32)),
         );
 
         // Neural compression
@@ -69,9 +65,7 @@ fn bench_compression(c: &mut Criterion) {
         group.bench_with_input(
             BenchmarkId::new("neural_compress", size),
             &weight_data,
-            |b, data| {
-                b.iter(|| neural.compress(black_box(data), DataType::Float32))
-            },
+            |b, data| b.iter(|| neural.compress(black_box(data), DataType::Float32)),
         );
     }
 
@@ -100,27 +94,21 @@ fn bench_decompression(c: &mut Criterion) {
         group.bench_with_input(
             BenchmarkId::new("zstd_decompress", size),
             &zstd_compressed,
-            |b, data| {
-                b.iter(|| zstd.decompress(black_box(data), DataType::Float32))
-            },
+            |b, data| b.iter(|| zstd.decompress(black_box(data), DataType::Float32)),
         );
 
         // LZ4 decompression
         group.bench_with_input(
             BenchmarkId::new("lz4_decompress", size),
             &lz4_compressed,
-            |b, data| {
-                b.iter(|| lz4.decompress(black_box(data), DataType::Float32))
-            },
+            |b, data| b.iter(|| lz4.decompress(black_box(data), DataType::Float32)),
         );
 
         // Neural decompression
         group.bench_with_input(
             BenchmarkId::new("neural_decompress", size),
             &neural_compressed,
-            |b, data| {
-                b.iter(|| neural.decompress(black_box(data), DataType::Float32))
-            },
+            |b, data| b.iter(|| neural.decompress(black_box(data), DataType::Float32)),
         );
     }
 
@@ -142,18 +130,14 @@ fn bench_sparse_delta_compression(c: &mut Criterion) {
         group.bench_with_input(
             BenchmarkId::new(format!("zstd_{}pct_sparse", sparsity_pct), size),
             &delta,
-            |b, data| {
-                b.iter(|| zstd.compress(black_box(data), DataType::Float32))
-            },
+            |b, data| b.iter(|| zstd.compress(black_box(data), DataType::Float32)),
         );
 
         let neural = NeuralCompressor::new(3);
         group.bench_with_input(
             BenchmarkId::new(format!("neural_{}pct_sparse", sparsity_pct), size),
             &delta,
-            |b, data| {
-                b.iter(|| neural.compress(black_box(data), DataType::Float32))
-            },
+            |b, data| b.iter(|| neural.compress(black_box(data), DataType::Float32)),
         );
     }
 

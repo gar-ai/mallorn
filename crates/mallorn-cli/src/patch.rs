@@ -2,7 +2,9 @@
 
 use anyhow::{Context, Result};
 use indicatif::{ProgressBar, ProgressStyle};
-use mallorn_core::streaming::{StreamConfig, StreamProgress, StreamingPatcher, TensorIndex, TensorLocation};
+use mallorn_core::streaming::{
+    StreamConfig, StreamProgress, StreamingPatcher, TensorIndex, TensorLocation,
+};
 use std::fs::{self, File};
 use std::io::{BufReader, BufWriter};
 use std::path::Path;
@@ -41,7 +43,9 @@ fn detect_patch_format(data: &[u8]) -> Result<PatchFormat> {
         return Ok(PatchFormat::ONNX);
     }
 
-    anyhow::bail!("Unknown patch format. Expected .tflp, .ggup, .onxp, .sftp, .ovinp, .cmlp, or .trtp file.");
+    anyhow::bail!(
+        "Unknown patch format. Expected .tflp, .ggup, .onxp, .sftp, .ovinp, .cmlp, or .trtp file."
+    );
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -56,13 +60,22 @@ enum PatchFormat {
     TensorRT,
 }
 
-pub fn run(model: &Path, patch: &Path, output: &Path, streaming: bool, buffer_size: usize) -> Result<()> {
+pub fn run(
+    model: &Path,
+    patch: &Path,
+    output: &Path,
+    streaming: bool,
+    buffer_size: usize,
+) -> Result<()> {
     println!("Applying patch...");
     println!("  Model: {}", model.display());
     println!("  Patch: {}", patch.display());
     println!("  Output: {}", output.display());
     if streaming {
-        println!("  Mode: streaming (buffer: {} MB)", buffer_size / (1024 * 1024));
+        println!(
+            "  Mode: streaming (buffer: {} MB)",
+            buffer_size / (1024 * 1024)
+        );
     }
 
     // Streaming mode for large models
@@ -144,7 +157,10 @@ pub fn run(model: &Path, patch: &Path, output: &Path, streaming: bool, buffer_si
             println!();
             println!("TensorRT patch applied successfully!");
             println!("  Input size:   {:>12} bytes (ONNX)", model_data.len());
-            println!("  Output size:  {:>12} bytes (ONNX)", result.onnx_data.len());
+            println!(
+                "  Output size:  {:>12} bytes (ONNX)",
+                result.onnx_data.len()
+            );
             println!(
                 "  Tensors:      {:>12} modified, {} unchanged",
                 verification.stats.tensors_modified, verification.stats.tensors_unchanged
@@ -167,7 +183,16 @@ pub fn run(model: &Path, patch: &Path, output: &Path, streaming: bool, buffer_si
             // Print rebuild instructions
             println!();
             println!("Next Steps - Rebuild TensorRT Engine:");
-            println!("  {}", result.rebuild_command.replace("model.onnx", &output.display().to_string()).replace("model.engine", &output.with_extension("engine").display().to_string()));
+            println!(
+                "  {}",
+                result
+                    .rebuild_command
+                    .replace("model.onnx", &output.display().to_string())
+                    .replace(
+                        "model.engine",
+                        &output.with_extension("engine").display().to_string()
+                    )
+            );
             println!();
             println!("TensorRT Configuration:");
             println!("  Precision:    {:?}", result.config.precision);
@@ -187,8 +212,14 @@ pub fn run(model: &Path, patch: &Path, output: &Path, streaming: bool, buffer_si
     // Print verification results
     println!();
     println!("Patch applied successfully!");
-    println!("  Source size:  {:>12} bytes", verification.stats.source_size);
-    println!("  Output size:  {:>12} bytes", verification.stats.target_size);
+    println!(
+        "  Source size:  {:>12} bytes",
+        verification.stats.source_size
+    );
+    println!(
+        "  Output size:  {:>12} bytes",
+        verification.stats.target_size
+    );
     println!(
         "  Tensors:      {:>12} modified, {} unchanged",
         verification.stats.tensors_modified, verification.stats.tensors_unchanged
@@ -252,39 +283,28 @@ fn run_streaming(model: &Path, patch: &Path, output: &Path, buffer_size: usize) 
     println!("  Format: {:?}", format);
 
     // Deserialize patch to get operations
-    let core_patch = match format {
-        PatchFormat::TFLite => {
-            mallorn_tflite::deserialize_patch(&patch_data)
-                .context("Failed to parse TFLite patch")?
-        }
-        PatchFormat::GGUF => {
-            mallorn_gguf::deserialize_patch(&patch_data)
-                .context("Failed to parse GGUF patch")?
-        }
-        PatchFormat::ONNX => {
-            mallorn_onnx::deserialize_patch(&patch_data)
-                .context("Failed to parse ONNX patch")?
-        }
-        PatchFormat::SafeTensors => {
-            mallorn_safetensors::deserialize_patch(&patch_data)
-                .context("Failed to parse SafeTensors patch")?
-        }
-        PatchFormat::OpenVINO => {
-            mallorn_openvino::deserialize_patch(&patch_data)
-                .context("Failed to parse OpenVINO patch")?
-        }
-        PatchFormat::CoreML => {
-            mallorn_coreml::deserialize_patch(&patch_data)
-                .context("Failed to parse CoreML patch")?
-        }
-        PatchFormat::TensorRT => {
-            // TensorRT doesn't support streaming mode - use non-streaming
-            println!();
-            println!("TensorRT patches don't support streaming mode.");
-            println!("Falling back to standard mode...");
-            return run(model, patch, output, false, buffer_size);
-        }
-    };
+    let core_patch =
+        match format {
+            PatchFormat::TFLite => mallorn_tflite::deserialize_patch(&patch_data)
+                .context("Failed to parse TFLite patch")?,
+            PatchFormat::GGUF => mallorn_gguf::deserialize_patch(&patch_data)
+                .context("Failed to parse GGUF patch")?,
+            PatchFormat::ONNX => mallorn_onnx::deserialize_patch(&patch_data)
+                .context("Failed to parse ONNX patch")?,
+            PatchFormat::SafeTensors => mallorn_safetensors::deserialize_patch(&patch_data)
+                .context("Failed to parse SafeTensors patch")?,
+            PatchFormat::OpenVINO => mallorn_openvino::deserialize_patch(&patch_data)
+                .context("Failed to parse OpenVINO patch")?,
+            PatchFormat::CoreML => mallorn_coreml::deserialize_patch(&patch_data)
+                .context("Failed to parse CoreML patch")?,
+            PatchFormat::TensorRT => {
+                // TensorRT doesn't support streaming mode - use non-streaming
+                println!();
+                println!("TensorRT patches don't support streaming mode.");
+                println!("Falling back to standard mode...");
+                return run(model, patch, output, false, buffer_size);
+            }
+        };
 
     // Get model file size to estimate tensor layout
     let model_metadata = fs::metadata(model).context("Failed to get model file metadata")?;
@@ -336,8 +356,7 @@ fn run_streaming(model: &Path, patch: &Path, output: &Path, buffer_size: usize) 
     let output_writer = BufWriter::with_capacity(buffer_size, output_file);
 
     // Configure streaming
-    let config = StreamConfig::default()
-        .with_buffer_size(buffer_size);
+    let config = StreamConfig::default().with_buffer_size(buffer_size);
 
     // Create streaming patcher
     let mut patcher = StreamingPatcher::new(source, output_writer, core_patch, config)
@@ -354,13 +373,22 @@ fn run_streaming(model: &Path, patch: &Path, output: &Path, buffer_size: usize) 
     // Print verification results
     println!();
     println!("Streaming patch applied successfully!");
-    println!("  Source size:  {:>12} bytes", verification.stats.source_size);
-    println!("  Output size:  {:>12} bytes", verification.stats.target_size);
+    println!(
+        "  Source size:  {:>12} bytes",
+        verification.stats.source_size
+    );
+    println!(
+        "  Output size:  {:>12} bytes",
+        verification.stats.target_size
+    );
     println!(
         "  Tensors:      {:>12} modified, {} unchanged",
         verification.stats.tensors_modified, verification.stats.tensors_unchanged
     );
-    println!("  Memory used:  {:>12} MB (buffer)", buffer_size / (1024 * 1024));
+    println!(
+        "  Memory used:  {:>12} MB (buffer)",
+        buffer_size / (1024 * 1024)
+    );
 
     if verification.source_valid {
         println!("  Source hash:  verified");

@@ -3,7 +3,7 @@
 //! Benchmarks parsing and serialization performance for TFLite models.
 
 use criterion::{black_box, criterion_group, criterion_main, BenchmarkId, Criterion, Throughput};
-use mallorn_tflite::{TFLiteDiffer, TFLitePatcher, TFLiteParser};
+use mallorn_tflite::{TFLiteDiffer, TFLiteParser, TFLitePatcher};
 
 /// Generate synthetic TFLite-like data for benchmarking
 /// Real TFLite files would be used in production benchmarks
@@ -29,21 +29,15 @@ fn generate_synthetic_model(num_tensors: usize, tensor_size: usize) -> Vec<u8> {
 }
 
 fn bench_parser_creation(c: &mut Criterion) {
-    c.bench_function("parser_creation", |b| {
-        b.iter(TFLiteParser::new)
-    });
+    c.bench_function("parser_creation", |b| b.iter(TFLiteParser::new));
 }
 
 fn bench_differ_creation(c: &mut Criterion) {
-    c.bench_function("differ_creation", |b| {
-        b.iter(TFLiteDiffer::new)
-    });
+    c.bench_function("differ_creation", |b| b.iter(TFLiteDiffer::new));
 }
 
 fn bench_patcher_creation(c: &mut Criterion) {
-    c.bench_function("patcher_creation", |b| {
-        b.iter(TFLitePatcher::new)
-    });
+    c.bench_function("patcher_creation", |b| b.iter(TFLitePatcher::new));
 }
 
 fn bench_synthetic_diff(c: &mut Criterion) {

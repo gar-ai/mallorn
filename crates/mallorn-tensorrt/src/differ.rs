@@ -60,7 +60,11 @@ impl TensorRTDiffer {
     }
 
     /// Create a patch with default TensorRT configuration
-    pub fn diff_default(&self, old_onnx: &[u8], new_onnx: &[u8]) -> Result<TensorRTPatch, DiffError> {
+    pub fn diff_default(
+        &self,
+        old_onnx: &[u8],
+        new_onnx: &[u8],
+    ) -> Result<TensorRTPatch, DiffError> {
         self.diff(old_onnx, new_onnx, TensorRTConfig::default())
     }
 
@@ -154,7 +158,10 @@ mod tests {
             dictionary: None,
         };
         let differ = TensorRTDiffer::with_options(options);
-        assert!(matches!(differ.compression_method(), CompressionMethod::Lz4));
+        assert!(matches!(
+            differ.compression_method(),
+            CompressionMethod::Lz4
+        ));
     }
 
     #[test]

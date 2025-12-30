@@ -278,8 +278,9 @@ impl OpenVINOParser {
                                     let key =
                                         String::from_utf8_lossy(attr.key.as_ref()).to_string();
                                     if key == "id" {
-                                        let port_id: u32 =
-                                            String::from_utf8_lossy(&attr.value).parse().unwrap_or(0);
+                                        let port_id: u32 = String::from_utf8_lossy(&attr.value)
+                                            .parse()
+                                            .unwrap_or(0);
                                         layer.port_ids.push(port_id);
                                     }
                                 }
@@ -402,7 +403,11 @@ impl OpenVINOParser {
     }
 
     /// Extract tensors from const layers and binary data
-    fn extract_tensors(&self, const_layers: &[ConstLayerInfo], bin_data: &[u8]) -> Vec<OpenVINOTensor> {
+    fn extract_tensors(
+        &self,
+        const_layers: &[ConstLayerInfo],
+        bin_data: &[u8],
+    ) -> Vec<OpenVINOTensor> {
         let mut tensors = Vec::new();
 
         for layer in const_layers {
@@ -415,11 +420,7 @@ impl OpenVINOParser {
             let shape: Vec<i64> = layer
                 .shape
                 .as_ref()
-                .map(|s| {
-                    s.split(',')
-                        .filter_map(|x| x.trim().parse().ok())
-                        .collect()
-                })
+                .map(|s| s.split(',').filter_map(|x| x.trim().parse().ok()).collect())
                 .unwrap_or_default();
 
             let data = if layer.offset + layer.size <= bin_data.len() {
@@ -463,7 +464,7 @@ impl LayerBuilder {
             name: self.name,
             layer_type: self.layer_type,
             attributes: self.attributes,
-            inputs: Vec::new(),  // Would need edge parsing for full connectivity
+            inputs: Vec::new(), // Would need edge parsing for full connectivity
             outputs: self.port_ids,
         }
     }

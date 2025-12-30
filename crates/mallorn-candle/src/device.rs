@@ -32,8 +32,8 @@ impl GpuDevice {
     /// Create a Metal device (macOS)
     #[cfg(feature = "metal")]
     pub fn metal(ordinal: usize) -> Result<Self, crate::GpuError> {
-        let device = Device::new_metal(ordinal)
-            .map_err(|e| crate::GpuError::DeviceError(e.to_string()))?;
+        let device =
+            Device::new_metal(ordinal).map_err(|e| crate::GpuError::DeviceError(e.to_string()))?;
         Ok(Self {
             inner: device,
             name: format!("Metal:{}", ordinal),

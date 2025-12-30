@@ -5,8 +5,8 @@
 use criterion::{black_box, criterion_group, criterion_main, BenchmarkId, Criterion, Throughput};
 use mallorn_core::{CompressionMethod, DiffOptions, Patch, PatchMetadata, PatchOperation};
 use mallorn_tensorrt::{
-    deserialize_patch, serialize_patch, Precision, TensorRTConfig, TensorRTDiffer,
-    TensorRTPatcher, TensorRTPatch,
+    deserialize_patch, serialize_patch, Precision, TensorRTConfig, TensorRTDiffer, TensorRTPatch,
+    TensorRTPatcher,
 };
 
 /// Create a synthetic test patch for benchmarking
@@ -74,15 +74,11 @@ fn bench_serialization(c: &mut Criterion) {
         let estimated_size = num_ops * data_size;
         group.throughput(Throughput::Bytes(estimated_size as u64));
 
-        group.bench_with_input(
-            BenchmarkId::new("serialize", name),
-            &patch,
-            |b, patch| {
-                b.iter(|| {
-                    let _ = serialize_patch(black_box(patch));
-                })
-            },
-        );
+        group.bench_with_input(BenchmarkId::new("serialize", name), &patch, |b, patch| {
+            b.iter(|| {
+                let _ = serialize_patch(black_box(patch));
+            })
+        });
     }
 
     group.finish();
@@ -154,9 +150,7 @@ fn bench_config_operations(c: &mut Criterion) {
 }
 
 fn bench_differ_creation(c: &mut Criterion) {
-    c.bench_function("differ_creation", |b| {
-        b.iter(TensorRTDiffer::new)
-    });
+    c.bench_function("differ_creation", |b| b.iter(TensorRTDiffer::new));
 
     c.bench_function("differ_with_options", |b| {
         b.iter(|| {
@@ -173,9 +167,7 @@ fn bench_differ_creation(c: &mut Criterion) {
 }
 
 fn bench_patcher_creation(c: &mut Criterion) {
-    c.bench_function("patcher_creation", |b| {
-        b.iter(TensorRTPatcher::new)
-    });
+    c.bench_function("patcher_creation", |b| b.iter(TensorRTPatcher::new));
 }
 
 fn bench_rebuild_instructions(c: &mut Criterion) {

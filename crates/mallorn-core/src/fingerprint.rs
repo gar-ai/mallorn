@@ -325,10 +325,11 @@ impl FingerprintDB {
     }
 
     /// Find matching fingerprint (may match on subset of fields)
-    pub fn find_matching(&self, fingerprint: &ModelFingerprint) -> Option<(&ModelFingerprint, &ModelVersion)> {
-        self.entries
-            .iter()
-            .find(|(fp, _)| fp.matches(fingerprint))
+    pub fn find_matching(
+        &self,
+        fingerprint: &ModelFingerprint,
+    ) -> Option<(&ModelFingerprint, &ModelVersion)> {
+        self.entries.iter().find(|(fp, _)| fp.matches(fingerprint))
     }
 
     /// Get all entries
@@ -378,10 +379,7 @@ impl FingerprintDB {
 
             let version = ModelVersion {
                 full_hash: None,
-                version: entry["version"]
-                    .as_str()
-                    .unwrap_or("unknown")
-                    .to_string(),
+                version: entry["version"].as_str().unwrap_or("unknown").to_string(),
                 patches_available: entry["patches"]
                     .as_array()
                     .map(|arr| {

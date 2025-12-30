@@ -77,9 +77,7 @@ fn bench_sparse_decode(c: &mut Criterion) {
                     size,
                 ),
                 &sparse,
-                |b, sparse| {
-                    b.iter(|| SparseEncoder::decode_csr(black_box(sparse)))
-                },
+                |b, sparse| b.iter(|| SparseEncoder::decode_csr(black_box(sparse))),
             );
         }
     }
@@ -104,9 +102,7 @@ fn bench_sparse_vs_dense_compression(c: &mut Criterion) {
         group.bench_with_input(
             BenchmarkId::new(format!("dense_{}pct", sparsity_pct), size),
             &data,
-            |b, data| {
-                b.iter(|| dense_compressor.compress(black_box(data), DataType::Float32))
-            },
+            |b, data| b.iter(|| dense_compressor.compress(black_box(data), DataType::Float32)),
         );
 
         // Sparse-aware compression
@@ -114,9 +110,7 @@ fn bench_sparse_vs_dense_compression(c: &mut Criterion) {
         group.bench_with_input(
             BenchmarkId::new(format!("sparse_{}pct", sparsity_pct), size),
             &data,
-            |b, data| {
-                b.iter(|| sparse_compressor.compress(black_box(data), DataType::Float32))
-            },
+            |b, data| b.iter(|| sparse_compressor.compress(black_box(data), DataType::Float32)),
         );
 
         // Sparse-aware with shape (CSR path)
@@ -150,9 +144,7 @@ fn bench_sparsity_detection(c: &mut Criterion) {
         group.bench_with_input(
             BenchmarkId::new("calculate_sparsity", size),
             &data,
-            |b, data| {
-                b.iter(|| SparseEncoder::calculate_sparsity(black_box(data), 4))
-            },
+            |b, data| b.iter(|| SparseEncoder::calculate_sparsity(black_box(data), 4)),
         );
     }
 

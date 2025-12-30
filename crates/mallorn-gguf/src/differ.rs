@@ -41,9 +41,10 @@ impl GGUFDiffer {
             }
             CompressionMethod::ZstdDict { level, .. } => {
                 if let Some(ref dict) = options.dictionary {
-                    Arc::new(ZstdDictCompressor::new(*level, dict).unwrap_or_else(|_| {
-                        panic!("Failed to create ZstdDictCompressor")
-                    }))
+                    Arc::new(
+                        ZstdDictCompressor::new(*level, dict)
+                            .unwrap_or_else(|_| panic!("Failed to create ZstdDictCompressor")),
+                    )
                 } else {
                     Arc::new(ZstdCompressor::new(*level))
                 }
@@ -117,10 +118,7 @@ impl GGUFDiffer {
                     .and_then(|v| v.as_string())
                     .map(|s| s.to_string()),
                 created_at,
-                description: Some(format!(
-                    "GGUF model patch ({} tensors)",
-                    new.tensor_count
-                )),
+                description: Some(format!("GGUF model patch ({} tensors)", new.tensor_count)),
             },
         })
     }

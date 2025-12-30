@@ -55,7 +55,9 @@ pub struct MallornPatcher {
 impl MallornPatcher {
     /// Create a new uninitialized patcher
     pub const fn new() -> Self {
-        Self { _opaque: [0u8; 256] }
+        Self {
+            _opaque: [0u8; 256],
+        }
     }
 
     /// Get mutable reference to inner patcher (unsafe cast)
@@ -331,7 +333,8 @@ mod tests {
     #[test]
     fn test_init_null_patcher() {
         let mut buffer = [0u8; 1024];
-        let result = unsafe { mallorn_init(core::ptr::null_mut(), buffer.as_mut_ptr(), buffer.len()) };
+        let result =
+            unsafe { mallorn_init(core::ptr::null_mut(), buffer.as_mut_ptr(), buffer.len()) };
         assert_eq!(result, MallornResult::ErrorIo);
     }
 

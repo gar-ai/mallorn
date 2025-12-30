@@ -321,7 +321,11 @@ fn test_fingerprint_with_real_model() {
         .output()
         .expect("Failed to run mallorn fingerprint");
 
-    assert!(output.status.success(), "fingerprint failed: {:?}", String::from_utf8_lossy(&output.stderr));
+    assert!(
+        output.status.success(),
+        "fingerprint failed: {:?}",
+        String::from_utf8_lossy(&output.stderr)
+    );
     let stdout = String::from_utf8_lossy(&output.stdout);
     assert!(stdout.contains("Fingerprint") || stdout.contains("Hash") || stdout.contains("hash"));
 }
@@ -375,8 +379,10 @@ fn test_full_diff_patch_cycle() {
 
     if !diff_output.status.success() {
         // Different model structures may not diff cleanly - this is acceptable
-        eprintln!("Diff failed (expected for different architectures): {}",
-                 String::from_utf8_lossy(&diff_output.stderr));
+        eprintln!(
+            "Diff failed (expected for different architectures): {}",
+            String::from_utf8_lossy(&diff_output.stderr)
+        );
         return;
     }
 
@@ -396,8 +402,10 @@ fn test_full_diff_patch_cycle() {
 
     if !patch_output.status.success() {
         // Patch application may fail for structurally different models
-        eprintln!("Patch apply failed (may be expected for different structures): {:?}",
-                 String::from_utf8_lossy(&patch_output.stderr));
+        eprintln!(
+            "Patch apply failed (may be expected for different structures): {:?}",
+            String::from_utf8_lossy(&patch_output.stderr)
+        );
         return;
     }
 
@@ -406,8 +414,15 @@ fn test_full_diff_patch_cycle() {
     // Verify output matches target
     let target_data = fs::read(&v1_quant_path).expect("Failed to read target");
     let output_data = fs::read(&output_path).expect("Failed to read output");
-    assert_eq!(target_data.len(), output_data.len(), "Output size should match target");
-    assert_eq!(target_data, output_data, "Output should match target exactly");
+    assert_eq!(
+        target_data.len(),
+        output_data.len(),
+        "Output size should match target"
+    );
+    assert_eq!(
+        target_data, output_data,
+        "Output should match target exactly"
+    );
 }
 
 #[test]
@@ -438,9 +453,15 @@ fn test_diff_with_parallel_flag() {
 
     // Should either succeed or fail gracefully (not panic)
     if output.status.success() {
-        assert!(patch_path.exists(), "Patch file should be created with --parallel");
+        assert!(
+            patch_path.exists(),
+            "Patch file should be created with --parallel"
+        );
     } else {
         let stderr = String::from_utf8_lossy(&output.stderr);
-        assert!(!stderr.contains("panic"), "Should not panic with --parallel flag");
+        assert!(
+            !stderr.contains("panic"),
+            "Should not panic with --parallel flag"
+        );
     }
 }

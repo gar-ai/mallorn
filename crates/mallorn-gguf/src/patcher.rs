@@ -5,7 +5,7 @@
 
 use crate::parser::{GGMLType, GGUFModel, GGUFParser, GGUFTensor};
 use mallorn_core::{
-    apply_xor_delta, sha256, verify_hash, Compressor, CompressionMethod, DataType, DeltaFormat,
+    apply_xor_delta, sha256, verify_hash, CompressionMethod, Compressor, DataType, DeltaFormat,
     Lz4Compressor, NeuralCompressor, Patch, PatchError, PatchOperation, PatchStats,
     PatchVerification, ZstdCompressor,
 };

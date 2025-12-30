@@ -35,9 +35,10 @@ impl OpenVINODiffer {
             }
             CompressionMethod::ZstdDict { level, .. } => {
                 if let Some(ref dict) = options.dictionary {
-                    Box::new(ZstdDictCompressor::new(*level, dict).unwrap_or_else(|_| {
-                        panic!("Failed to create ZstdDictCompressor")
-                    }))
+                    Box::new(
+                        ZstdDictCompressor::new(*level, dict)
+                            .unwrap_or_else(|_| panic!("Failed to create ZstdDictCompressor")),
+                    )
                 } else {
                     Box::new(ZstdCompressor::new(*level))
                 }
@@ -48,7 +49,10 @@ impl OpenVINODiffer {
             CompressionMethod::Adaptive { .. } => Box::new(ZstdCompressor::new(3)),
         };
 
-        Self { compressor, options }
+        Self {
+            compressor,
+            options,
+        }
     }
 
     /// Diff two OpenVINO models from raw bytes (XML + bin concatenated)
@@ -102,11 +106,8 @@ impl OpenVINODiffer {
         let mut operations = Vec::new();
 
         // Build lookup map for old tensors by name
-        let old_tensor_map: HashMap<&str, &OpenVINOTensor> = old
-            .tensors
-            .iter()
-            .map(|t| (t.name.as_str(), t))
-            .collect();
+        let old_tensor_map: HashMap<&str, &OpenVINOTensor> =
+            old.tensors.iter().map(|t| (t.name.as_str(), t)).collect();
 
         // Process each tensor in the new model
         for new_tensor in &new.tensors {
@@ -286,7 +287,9 @@ mod tests {
 
         let new_tensor = old_tensor.clone();
 
-        let op = differ.diff_tensor("test", &old_tensor, &new_tensor).unwrap();
+        let op = differ
+            .diff_tensor("test", &old_tensor, &new_tensor)
+            .unwrap();
         assert!(matches!(op, PatchOperation::CopyTensor { .. }));
     }
 
@@ -312,7 +315,9 @@ mod tests {
             data: vec![8, 7, 6, 5, 4, 3, 2, 1],
         };
 
-        let op = differ.diff_tensor("small", &old_tensor, &new_tensor).unwrap();
+        let op = differ
+            .diff_tensor("small", &old_tensor, &new_tensor)
+            .unwrap();
         assert!(matches!(op, PatchOperation::ReplaceTensor { .. }));
     }
 }

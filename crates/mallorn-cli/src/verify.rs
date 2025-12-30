@@ -124,8 +124,14 @@ pub fn run(model: &Path, patch: &Path) -> Result<()> {
     // Print statistics
     println!();
     println!("Patch statistics:");
-    println!("  Source size:      {:>10} bytes", verification.stats.source_size);
-    println!("  Patch size:       {:>10} bytes", verification.stats.patch_size);
+    println!(
+        "  Source size:      {:>10} bytes",
+        verification.stats.source_size
+    );
+    println!(
+        "  Patch size:       {:>10} bytes",
+        verification.stats.patch_size
+    );
     println!(
         "  Compression:      {:>10.1}x",
         verification.stats.compression_ratio
@@ -141,7 +147,10 @@ pub fn run(model: &Path, patch: &Path) -> Result<()> {
 
     // Print hashes
     println!();
-    println!("Expected target hash: {}", hex::encode(verification.expected_target));
+    println!(
+        "Expected target hash: {}",
+        hex::encode(verification.expected_target)
+    );
 
     println!();
     println!("Verification: PASSED");

@@ -93,8 +93,11 @@ impl PatchInfo {
     fn __repr__(&self) -> String {
         format!(
             "PatchInfo(format='{}', version={}, operations={}, modified={}, unchanged={})",
-            self.format, self.version, self.operation_count,
-            self.tensors_modified, self.tensors_unchanged
+            self.format,
+            self.version,
+            self.operation_count,
+            self.tensors_modified,
+            self.tensors_unchanged
         )
     }
 }
@@ -117,7 +120,12 @@ pub struct DiffOptions {
 impl DiffOptions {
     #[new]
     #[pyo3(signature = (compression="zstd", compression_level=3, neural_compression=false, parallel=false))]
-    fn new(compression: &str, compression_level: i32, neural_compression: bool, parallel: bool) -> Self {
+    fn new(
+        compression: &str,
+        compression_level: i32,
+        neural_compression: bool,
+        parallel: bool,
+    ) -> Self {
         Self {
             compression: compression.to_string(),
             compression_level,
@@ -155,7 +163,9 @@ impl Fingerprint {
     fn __repr__(&self) -> String {
         format!(
             "Fingerprint(format='{}', file_size={}, combined_hash='{}')",
-            self.format, self.file_size, &self.combined_hash[..16.min(self.combined_hash.len())]
+            self.format,
+            self.file_size,
+            &self.combined_hash[..16.min(self.combined_hash.len())]
         )
     }
 
@@ -169,7 +179,6 @@ impl Fingerprint {
         self.combined_hash[..16.min(self.combined_hash.len())].to_string()
     }
 }
-
 
 /// Detect model format from file path
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -525,8 +534,9 @@ pub fn apply_patch(model: &str, patch: &str, output: &str) -> PyResult<PatchVeri
                 .map_err(|e| PyValueError::new_err(format!("Failed to apply patch: {}", e)))?;
 
             // Write output ONNX model
-            fs::write(output_path, &result.onnx_data)
-                .map_err(|e| PyValueError::new_err(format!("Failed to write output model: {}", e)))?;
+            fs::write(output_path, &result.onnx_data).map_err(|e| {
+                PyValueError::new_err(format!("Failed to write output model: {}", e))
+            })?;
 
             return Ok(PatchVerification {
                 source_valid: verification.source_valid,
@@ -724,7 +734,9 @@ pub fn patch_info(patch_path: &str) -> PyResult<PatchInfo> {
                 CompressionMethod::Zstd { level } => format!("zstd({})", level),
                 CompressionMethod::Neural { .. } => "neural".to_string(),
                 CompressionMethod::Adaptive { strategy } => format!("adaptive({:?})", strategy),
-                CompressionMethod::ZstdDict { level, dict_id } => format!("zstd+dict({},{})", level, dict_id),
+                CompressionMethod::ZstdDict { level, dict_id } => {
+                    format!("zstd+dict({},{})", level, dict_id)
+                }
             };
 
             return Ok(PatchInfo {
@@ -746,7 +758,9 @@ pub fn patch_info(patch_path: &str) -> PyResult<PatchInfo> {
         CompressionMethod::Zstd { level } => format!("zstd({})", level),
         CompressionMethod::Neural { .. } => "neural".to_string(),
         CompressionMethod::Adaptive { strategy } => format!("adaptive({:?})", strategy),
-        CompressionMethod::ZstdDict { level, dict_id } => format!("zstd+dict({},{})", level, dict_id),
+        CompressionMethod::ZstdDict { level, dict_id } => {
+            format!("zstd+dict({},{})", level, dict_id)
+        }
     };
 
     Ok(PatchInfo {

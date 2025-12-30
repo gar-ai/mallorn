@@ -356,7 +356,9 @@ impl QuantizedDelta {
         let data_bytes = bytes_per_block - scale_bytes;
 
         let num_blocks = scale_delta.len() / scale_bytes;
-        let mut new = Vec::with_capacity(num_blocks * bytes_per_block + data_delta.len() - num_blocks * data_bytes);
+        let mut new = Vec::with_capacity(
+            num_blocks * bytes_per_block + data_delta.len() - num_blocks * data_bytes,
+        );
 
         let mut scale_idx = 0;
         let mut data_idx = 0;
@@ -382,7 +384,10 @@ impl QuantizedDelta {
         // Handle remaining data
         let remaining_old_start = num_blocks * bytes_per_block;
         while data_idx < data_delta.len() {
-            let old_val = old.get(remaining_old_start + data_idx - num_blocks * data_bytes).copied().unwrap_or(0);
+            let old_val = old
+                .get(remaining_old_start + data_idx - num_blocks * data_bytes)
+                .copied()
+                .unwrap_or(0);
             new.push(old_val ^ data_delta[data_idx]);
             data_idx += 1;
         }
@@ -541,8 +546,15 @@ mod tests {
         // Modify data
         new[10] = 0xAA;
 
-        let (scale_delta, data_delta) = QuantizedDelta::compute_separated(&old, &new, &block_info, scale_bytes);
-        let reconstructed = QuantizedDelta::apply_separated(&old, &scale_delta, &data_delta, &block_info, scale_bytes);
+        let (scale_delta, data_delta) =
+            QuantizedDelta::compute_separated(&old, &new, &block_info, scale_bytes);
+        let reconstructed = QuantizedDelta::apply_separated(
+            &old,
+            &scale_delta,
+            &data_delta,
+            &block_info,
+            scale_bytes,
+        );
 
         assert_eq!(reconstructed, new);
     }

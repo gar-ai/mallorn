@@ -94,7 +94,12 @@ pub fn serialize_patch(patch: &Patch) -> Result<Vec<u8>, std::io::Error> {
     };
 
     // If not Zstd, Adaptive, or ZstdDict (which have extra bytes), write the tag
-    if !matches!(patch.compression, CompressionMethod::Zstd { .. } | CompressionMethod::Adaptive { .. } | CompressionMethod::ZstdDict { .. }) {
+    if !matches!(
+        patch.compression,
+        CompressionMethod::Zstd { .. }
+            | CompressionMethod::Adaptive { .. }
+            | CompressionMethod::ZstdDict { .. }
+    ) {
         buf.write_u8(compression_byte)?;
     }
 
@@ -121,7 +126,10 @@ pub fn serialize_patch(patch: &Patch) -> Result<Vec<u8>, std::io::Error> {
 }
 
 /// Serialize a single operation
-fn serialize_operation<W: Write>(writer: &mut W, op: &PatchOperation) -> Result<(), std::io::Error> {
+fn serialize_operation<W: Write>(
+    writer: &mut W,
+    op: &PatchOperation,
+) -> Result<(), std::io::Error> {
     match op {
         PatchOperation::ReplaceTensor { name, data, .. } => {
             writer.write_u8(op_tags::REPLACE_TENSOR)?;
@@ -299,7 +307,11 @@ fn deserialize_operation(cursor: &mut Cursor<&[u8]>) -> Result<PatchOperation, P
         op_tags::REPLACE_TENSOR => {
             let name = read_string(cursor)?;
             let data = read_bytes(cursor)?;
-            Ok(PatchOperation::ReplaceTensor { name, data, compression: None })
+            Ok(PatchOperation::ReplaceTensor {
+                name,
+                data,
+                compression: None,
+            })
         }
         op_tags::DELTA_TENSOR => {
             let name = read_string(cursor)?;

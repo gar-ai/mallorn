@@ -1,7 +1,7 @@
 //! Model fingerprinting for WASM
 
+use sha2::{Digest, Sha256};
 use wasm_bindgen::prelude::*;
-use sha2::{Sha256, Digest};
 
 /// Fingerprint result
 #[wasm_bindgen]

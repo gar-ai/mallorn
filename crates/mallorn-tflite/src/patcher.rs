@@ -5,7 +5,7 @@
 
 use crate::parser::{TFLiteDataType, TFLiteModel, TFLiteParser, TFLiteTensor};
 use mallorn_core::{
-    apply_xor_delta, sha256, verify_hash, Compressor, CompressionMethod, DataType, DeltaFormat,
+    apply_xor_delta, sha256, verify_hash, CompressionMethod, Compressor, DataType, DeltaFormat,
     Lz4Compressor, NeuralCompressor, Patch, PatchError, PatchOperation, PatchStats,
     PatchVerification, ZstdCompressor,
 };
@@ -249,7 +249,9 @@ impl TFLitePatcher {
                 if let Some(new_tensor) = new_tensors.iter().find(|t| t.name == old_tensor.name) {
                     if old_tensor.data.len() == new_tensor.data.len() {
                         // Same size - can patch in place
-                        if let Some(offset) = find_buffer_offset(&old_model.raw_data, &old_tensor.data) {
+                        if let Some(offset) =
+                            find_buffer_offset(&old_model.raw_data, &old_tensor.data)
+                        {
                             new_data[offset..offset + new_tensor.data.len()]
                                 .copy_from_slice(&new_tensor.data);
                         }
@@ -377,11 +379,9 @@ mod tests {
             version: 1,
             source_hash: [0u8; 32],
             target_hash: [0u8; 32],
-            operations: vec![
-                PatchOperation::CopyTensor {
-                    name: "test".into(),
-                },
-            ],
+            operations: vec![PatchOperation::CopyTensor {
+                name: "test".into(),
+            }],
             compression: CompressionMethod::Zstd { level: 3 },
             metadata: mallorn_core::PatchMetadata::default(),
         };

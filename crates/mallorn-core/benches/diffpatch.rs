@@ -36,9 +36,7 @@ fn bench_xor_delta(c: &mut Criterion) {
         group.bench_with_input(
             BenchmarkId::new("compute_delta", size),
             &(&old_data, &new_data),
-            |b, (old, new)| {
-                b.iter(|| xor_delta(black_box(old), black_box(new)))
-            },
+            |b, (old, new)| b.iter(|| xor_delta(black_box(old), black_box(new))),
         );
     }
 
@@ -59,9 +57,7 @@ fn bench_apply_delta(c: &mut Criterion) {
         group.bench_with_input(
             BenchmarkId::new("apply_delta", size),
             &(&old_data, &delta),
-            |b, (old, delta)| {
-                b.iter(|| apply_xor_delta(black_box(old), black_box(delta)))
-            },
+            |b, (old, delta)| b.iter(|| apply_xor_delta(black_box(old), black_box(delta))),
         );
     }
 
@@ -83,9 +79,7 @@ fn bench_delta_by_change_ratio(c: &mut Criterion) {
         group.bench_with_input(
             BenchmarkId::new(format!("delta_{}pct_changed", ratio_pct), size),
             &(&old_data, &new_data),
-            |b, (old, new)| {
-                b.iter(|| xor_delta(black_box(old), black_box(new)))
-            },
+            |b, (old, new)| b.iter(|| xor_delta(black_box(old), black_box(new))),
         );
     }
 

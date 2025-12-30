@@ -298,9 +298,7 @@ impl StreamingPatcher {
         let decompress_dst = self.buffer_size / 2;
         if self.current_op.compression == CompressionType::Lz4 as u8 {
             // Use LZ4 decompression
-            let compressed = unsafe {
-                core::slice::from_raw_parts(self.buffer, payload_size)
-            };
+            let compressed = unsafe { core::slice::from_raw_parts(self.buffer, payload_size) };
             let decompressed = unsafe {
                 core::slice::from_raw_parts_mut(self.buffer.add(decompress_dst), uncompressed_size)
             };

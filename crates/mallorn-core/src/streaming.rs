@@ -237,9 +237,7 @@ impl<R: Read + Seek, W: Write> StreamingPatcher<R, W> {
         let operations: HashMap<String, PatchOperation> = patch
             .operations
             .iter()
-            .filter_map(|op| {
-                get_tensor_name(op).map(|name| (name.to_string(), op.clone()))
-            })
+            .filter_map(|op| get_tensor_name(op).map(|name| (name.to_string(), op.clone())))
             .collect();
 
         Ok(Self {
@@ -309,14 +307,19 @@ impl<R: Read + Seek, W: Write> StreamingPatcher<R, W> {
         op: &PatchOperation,
     ) -> Result<(), PatchError> {
         match op {
-            PatchOperation::ReplaceTensor { data, compression, .. } => {
+            PatchOperation::ReplaceTensor {
+                data, compression, ..
+            } => {
                 // Read source for hashing
                 let mut source_data = vec![0u8; location.size as usize];
                 self.source.read_exact(&mut source_data)?;
                 self.source_hasher.update(&source_data);
 
                 // Decompress data if needed
-                let decompressed = decompress_data(data, compression.as_ref().unwrap_or(&self.patch.compression))?;
+                let decompressed = decompress_data(
+                    data,
+                    compression.as_ref().unwrap_or(&self.patch.compression),
+                )?;
 
                 // Write replacement data
                 self.output.write_all(&decompressed)?;
@@ -335,7 +338,10 @@ impl<R: Read + Seek, W: Write> StreamingPatcher<R, W> {
                 self.source_hasher.update(&source_data);
 
                 // Decompress delta if needed
-                let decompressed_delta = decompress_data(delta, compression.as_ref().unwrap_or(&self.patch.compression))?;
+                let decompressed_delta = decompress_data(
+                    delta,
+                    compression.as_ref().unwrap_or(&self.patch.compression),
+                )?;
 
                 // Apply delta based on format
                 let new_data = match delta_format {
@@ -696,7 +702,11 @@ mod tests {
         // Streaming: 64MB buffer + 100MB largest tensor + 1MB overhead = ~165MB
         // Non-streaming: 10GB * 2 + 1GB = ~21GB
         let savings = MemoryEstimator::memory_savings(&index, &config);
-        assert!(savings > 0.9, "Expected >90% savings, got {:.1}%", savings * 100.0);
+        assert!(
+            savings > 0.9,
+            "Expected >90% savings, got {:.1}%",
+            savings * 100.0
+        );
     }
 
     #[test]

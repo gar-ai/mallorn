@@ -156,8 +156,9 @@ impl SafeTensorsParser {
                 }
             } else {
                 // Parse tensor metadata
-                let tensor_meta: SafeTensorMeta = serde_json::from_value(value)
-                    .map_err(|e| ParseError::Malformed(format!("Invalid tensor metadata for {}: {}", key, e)))?;
+                let tensor_meta: SafeTensorMeta = serde_json::from_value(value).map_err(|e| {
+                    ParseError::Malformed(format!("Invalid tensor metadata for {}: {}", key, e))
+                })?;
                 tensors.insert(key, tensor_meta);
             }
         }
@@ -183,7 +184,9 @@ impl SafeTensorsParser {
         let header_size = u64::from_le_bytes(data[0..8].try_into().unwrap()) as usize;
 
         if data.len() < 8 + header_size {
-            return Err(ParseError::Malformed("File too small for header".to_string()));
+            return Err(ParseError::Malformed(
+                "File too small for header".to_string(),
+            ));
         }
 
         let header_bytes = &data[8..8 + header_size];
@@ -228,8 +231,12 @@ pub fn serialize_safetensors(model: &ParsedModel) -> Result<Vec<u8>, SerializeEr
     // Add metadata if present
     if !model.metadata.custom.is_empty() {
         let meta_obj: HashMap<String, String> = model.metadata.custom.clone();
-        header.insert("__metadata__".to_string(), serde_json::to_value(meta_obj)
-            .map_err(|e| SerializeError::Failed(format!("Failed to serialize metadata: {}", e)))?);
+        header.insert(
+            "__metadata__".to_string(),
+            serde_json::to_value(meta_obj).map_err(|e| {
+                SerializeError::Failed(format!("Failed to serialize metadata: {}", e))
+            })?,
+        );
     }
 
     // Calculate tensor offsets and add to header
@@ -250,8 +257,12 @@ pub fn serialize_safetensors(model: &ParsedModel) -> Result<Vec<u8>, SerializeEr
             data_offsets: [start, end],
         };
 
-        header.insert(tensor.name.clone(), serde_json::to_value(&meta)
-            .map_err(|e| SerializeError::Failed(format!("Failed to serialize tensor metadata: {}", e)))?);
+        header.insert(
+            tensor.name.clone(),
+            serde_json::to_value(&meta).map_err(|e| {
+                SerializeError::Failed(format!("Failed to serialize tensor metadata: {}", e))
+            })?,
+        );
 
         tensor_data.extend_from_slice(&tensor.data);
         current_offset = end;
@@ -290,15 +301,13 @@ mod tests {
         let model = ParsedModel {
             format: "safetensors".to_string(),
             metadata: ModelMetadata::default(),
-            tensors: vec![
-                Tensor {
-                    name: "weight".to_string(),
-                    shape: vec![2, 3],
-                    dtype: DataType::Float32,
-                    data: vec![0; 24], // 2*3*4 bytes
-                    quantization: None,
-                },
-            ],
+            tensors: vec![Tensor {
+                name: "weight".to_string(),
+                shape: vec![2, 3],
+                dtype: DataType::Float32,
+                data: vec![0; 24], // 2*3*4 bytes
+                quantization: None,
+            }],
             graph: None,
         };
 

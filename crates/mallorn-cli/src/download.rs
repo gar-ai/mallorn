@@ -100,10 +100,7 @@ fn download_http(
         .context("Failed to create HTTP client")?;
 
     // First, get content length with HEAD request
-    let head_response = client
-        .head(url)
-        .send()
-        .context("Failed to fetch headers")?;
+    let head_response = client.head(url).send().context("Failed to fetch headers")?;
 
     if !head_response.status().is_success() {
         anyhow::bail!("HTTP error: {}", head_response.status());

@@ -78,7 +78,9 @@ impl TensorRTPatcher {
         }
 
         // Generate rebuild command
-        let rebuild_command = patch.config.to_trtexec_command("model.onnx", "model.engine");
+        let rebuild_command = patch
+            .config
+            .to_trtexec_command("model.onnx", "model.engine");
 
         Ok(ApplyResult {
             onnx_data: new_onnx,
@@ -165,7 +167,9 @@ impl TensorRTPatcher {
     /// Get rebuild instructions without applying the patch
     pub fn get_rebuild_instructions(&self, patch: &TensorRTPatch) -> RebuildInstructions {
         RebuildInstructions {
-            command: patch.config.to_trtexec_command("model.onnx", "model.engine"),
+            command: patch
+                .config
+                .to_trtexec_command("model.onnx", "model.engine"),
             precision: patch.config.precision,
             workspace_mb: patch.config.workspace_size_mb,
             max_batch_size: patch.config.max_batch_size,

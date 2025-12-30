@@ -74,9 +74,7 @@ fn bench_delta_compute(c: &mut Criterion) {
         group.bench_with_input(
             BenchmarkId::new(format!("q4_0_regular_{}_blocks", num_blocks), size),
             &(&old, &new),
-            |b, (old, new)| {
-                b.iter(|| xor_delta(black_box(old), black_box(new)))
-            },
+            |b, (old, new)| b.iter(|| xor_delta(black_box(old), black_box(new))),
         );
 
         // Block-aligned delta
@@ -85,7 +83,11 @@ fn bench_delta_compute(c: &mut Criterion) {
             &(&old, &new),
             |b, (old, new)| {
                 b.iter(|| {
-                    QuantizedDelta::compute_block_aligned(black_box(old), black_box(new), &block_info)
+                    QuantizedDelta::compute_block_aligned(
+                        black_box(old),
+                        black_box(new),
+                        &block_info,
+                    )
                 })
             },
         );
@@ -113,9 +115,7 @@ fn bench_delta_compute(c: &mut Criterion) {
         group.bench_with_input(
             BenchmarkId::new(format!("q4k_regular_{}_blocks", num_blocks), size),
             &(&old, &new),
-            |b, (old, new)| {
-                b.iter(|| xor_delta(black_box(old), black_box(new)))
-            },
+            |b, (old, new)| b.iter(|| xor_delta(black_box(old), black_box(new))),
         );
 
         group.bench_with_input(
@@ -123,7 +123,11 @@ fn bench_delta_compute(c: &mut Criterion) {
             &(&old, &new),
             |b, (old, new)| {
                 b.iter(|| {
-                    QuantizedDelta::compute_block_aligned(black_box(old), black_box(new), &block_info)
+                    QuantizedDelta::compute_block_aligned(
+                        black_box(old),
+                        black_box(new),
+                        &block_info,
+                    )
                 })
             },
         );
@@ -149,9 +153,7 @@ fn bench_delta_apply(c: &mut Criterion) {
         group.bench_with_input(
             BenchmarkId::new(format!("q4_0_regular_{}_blocks", num_blocks), size),
             &(&old, &delta),
-            |b, (old, delta)| {
-                b.iter(|| apply_xor_delta(black_box(old), black_box(delta)))
-            },
+            |b, (old, delta)| b.iter(|| apply_xor_delta(black_box(old), black_box(delta))),
         );
 
         // Block-aligned apply
@@ -160,7 +162,11 @@ fn bench_delta_apply(c: &mut Criterion) {
             &(&old, &delta),
             |b, (old, delta)| {
                 b.iter(|| {
-                    QuantizedDelta::apply_block_aligned(black_box(old), black_box(delta), &block_info)
+                    QuantizedDelta::apply_block_aligned(
+                        black_box(old),
+                        black_box(delta),
+                        &block_info,
+                    )
                 })
             },
         );
@@ -186,7 +192,10 @@ fn bench_separated_delta(c: &mut Criterion) {
 
         // Separated compute
         group.bench_with_input(
-            BenchmarkId::new(format!("q4_0_separated_compute_{}_blocks", num_blocks), size),
+            BenchmarkId::new(
+                format!("q4_0_separated_compute_{}_blocks", num_blocks),
+                size,
+            ),
             &(&old, &new),
             |b, (old, new)| {
                 b.iter(|| {
@@ -242,9 +251,7 @@ fn bench_quantization_detection(c: &mut Criterion) {
         group.bench_with_input(
             BenchmarkId::new(format!("{:?}", dtype), 0),
             &dtype,
-            |b, dtype| {
-                b.iter(|| QuantizationBlockInfo::for_dtype(black_box(*dtype)))
-            },
+            |b, dtype| b.iter(|| QuantizationBlockInfo::for_dtype(black_box(*dtype))),
         );
     }
 

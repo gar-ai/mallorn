@@ -44,7 +44,9 @@ mod parser;
 mod patcher;
 
 pub use differ::CoreMLDiffer;
-pub use format::{deserialize_patch, extension, is_cmlp, serialize_patch, CMLP_MAGIC, CMLP_VERSION};
+pub use format::{
+    deserialize_patch, extension, is_cmlp, serialize_patch, CMLP_MAGIC, CMLP_VERSION,
+};
 pub use parser::{CoreMLModel, CoreMLParser, CoreMLTensor};
 pub use patcher::CoreMLPatcher;
 

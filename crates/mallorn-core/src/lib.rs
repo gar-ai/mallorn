@@ -27,24 +27,24 @@ pub use chain::{
 pub use compression::{
     calculate_sparsity, AdaptiveCompressor, CompressedTensor, Compressor, CompressorFactory,
     DefaultCompressorFactory, DictCompressorFactory, DictionaryTrainer, Lz4Compressor,
-    NeuralCompressor, ParallelCompressor, SparseCompressor, SparseCSR, SparseEncoder,
+    NeuralCompressor, ParallelCompressor, SparseCSR, SparseCompressor, SparseEncoder,
     TensorCompressionHint, TensorData, ZstdCompressor, ZstdDictCompressor,
 };
 pub use diff::{apply_xor_delta, xor_delta, QuantizationBlockInfo, QuantizedDelta};
+pub use error::{CompressionError, DiffError, MallornError, ParseError, PatchError};
 pub use fingerprint::{FingerprintDB, FingerprintError, ModelFingerprint, ModelVersion};
+pub use hash::{crc32, sha256, verify_hash};
 pub use network::{
     ChainInfo, DownloadConfig, DownloadState, NetworkError, PatchHeader, PatchInfo, PatchManifest,
 };
-pub use error::{CompressionError, DiffError, MallornError, ParseError, PatchError};
-pub use hash::{crc32, sha256, verify_hash};
 pub use signature::{
     generate_keypair, is_signed_patch, load_signing_key, load_verifying_key, SignatureError,
     SignedPatch,
 };
 pub use streaming::{
-    apply_patch_streaming, ChunkedReader, ChunkedWriter, MemoryEstimator, NoProgress,
-    StreamConfig, StreamProgress, StreamingPatcher, TensorIndex, TensorLocation,
-    DEFAULT_BUFFER_SIZE, MIN_BUFFER_SIZE,
+    apply_patch_streaming, ChunkedReader, ChunkedWriter, MemoryEstimator, NoProgress, StreamConfig,
+    StreamProgress, StreamingPatcher, TensorIndex, TensorLocation, DEFAULT_BUFFER_SIZE,
+    MIN_BUFFER_SIZE,
 };
 pub use traits::{Differ, ModelFormat, Patcher};
 pub use types::{

@@ -40,9 +40,10 @@ impl TFLiteDiffer {
             CompressionMethod::ZstdDict { level, .. } => {
                 // Use dictionary if available in options, otherwise fall back to regular zstd
                 if let Some(ref dict) = options.dictionary {
-                    Arc::new(ZstdDictCompressor::new(*level, dict).unwrap_or_else(|_| {
-                        panic!("Failed to create ZstdDictCompressor")
-                    }))
+                    Arc::new(
+                        ZstdDictCompressor::new(*level, dict)
+                            .unwrap_or_else(|_| panic!("Failed to create ZstdDictCompressor")),
+                    )
                 } else {
                     Arc::new(ZstdCompressor::new(*level))
                 }
@@ -239,7 +240,10 @@ mod tests {
     #[test]
     fn test_differ_creation() {
         let differ = TFLiteDiffer::new();
-        assert!(matches!(differ.compressor.method(), CompressionMethod::Zstd { .. }));
+        assert!(matches!(
+            differ.compressor.method(),
+            CompressionMethod::Zstd { .. }
+        ));
     }
 
     #[test]

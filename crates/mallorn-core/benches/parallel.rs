@@ -39,10 +39,10 @@ fn bench_parallel_vs_sequential(c: &mut Criterion) {
 
     // Test with different numbers of tensors
     let configs = [
-        (4, 256 * 1024),   // 4 tensors x 256KB = 1MB
-        (16, 256 * 1024),  // 16 tensors x 256KB = 4MB
-        (32, 256 * 1024),  // 32 tensors x 256KB = 8MB
-        (64, 128 * 1024),  // 64 tensors x 128KB = 8MB
+        (4, 256 * 1024),  // 4 tensors x 256KB = 1MB
+        (16, 256 * 1024), // 16 tensors x 256KB = 4MB
+        (32, 256 * 1024), // 32 tensors x 256KB = 8MB
+        (64, 128 * 1024), // 64 tensors x 128KB = 8MB
     ];
 
     for (num_tensors, tensor_size) in configs {

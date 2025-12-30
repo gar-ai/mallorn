@@ -5,7 +5,7 @@
 
 use crate::parser::{ONNXParser, ONNXTensor};
 use mallorn_core::{
-    apply_xor_delta, sha256, verify_hash, Compressor, CompressionMethod, DataType, DeltaFormat,
+    apply_xor_delta, sha256, verify_hash, CompressionMethod, Compressor, DataType, DeltaFormat,
     Lz4Compressor, NeuralCompressor, Patch, PatchError, PatchOperation, PatchStats,
     PatchVerification, ZstdCompressor,
 };
@@ -134,7 +134,9 @@ impl ONNXPatcher {
         }
 
         // Rebuild ONNX model binary (re-encode protobuf)
-        let new_model_data = self.parser.reconstruct(&old_model, &new_tensors)
+        let new_model_data = self
+            .parser
+            .reconstruct(&old_model, &new_tensors)
             .map_err(|_e| PatchError::Corrupted)?;
 
         // Verify target hash

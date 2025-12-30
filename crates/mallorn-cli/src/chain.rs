@@ -370,8 +370,7 @@ pub fn squash(
 
     if links_to_squash.len() == 1 {
         // Just extract the single patch
-        fs::write(output, &links_to_squash[0].patch_data)
-            .context("Failed to write patch file")?;
+        fs::write(output, &links_to_squash[0].patch_data).context("Failed to write patch file")?;
         println!();
         println!("Single patch extracted (no squash needed)");
         return Ok(());
@@ -438,7 +437,13 @@ pub fn apply(
             .links
             .iter()
             .take_while(|link| link.target_hash != *t)
-            .chain(chain.links.iter().filter(|link| link.target_hash == *t).take(1))
+            .chain(
+                chain
+                    .links
+                    .iter()
+                    .filter(|link| link.target_hash == *t)
+                    .take(1),
+            )
             .collect()
     } else {
         chain.links.iter().collect()

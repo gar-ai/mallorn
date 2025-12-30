@@ -172,14 +172,19 @@ fn hypothesis_decompression_speed() {
 
     let start = Instant::now();
     for _ in 0..iterations {
-        let _ = neural.decompress(&neural_compressed, DataType::Float32).unwrap();
+        let _ = neural
+            .decompress(&neural_compressed, DataType::Float32)
+            .unwrap();
     }
     let neural_time = start.elapsed();
-    let neural_speed = (data_size as f64 * iterations as f64) / neural_time.as_secs_f64() / 1_000_000.0;
+    let neural_speed =
+        (data_size as f64 * iterations as f64) / neural_time.as_secs_f64() / 1_000_000.0;
 
     let start = Instant::now();
     for _ in 0..iterations {
-        let _ = zstd.decompress(&zstd_compressed, DataType::Float32).unwrap();
+        let _ = zstd
+            .decompress(&zstd_compressed, DataType::Float32)
+            .unwrap();
     }
     let zstd_time = start.elapsed();
     let zstd_speed = (data_size as f64 * iterations as f64) / zstd_time.as_secs_f64() / 1_000_000.0;

@@ -4,8 +4,8 @@
 //! - `ruzstd` for zstd decompression (decode only)
 //! - `lz4_flex` for lz4 compression/decompression
 
-use wasm_bindgen::prelude::*;
 use crate::WasmError;
+use wasm_bindgen::prelude::*;
 
 /// Compress data using zstd
 ///
@@ -14,7 +14,7 @@ use crate::WasmError;
 #[wasm_bindgen]
 pub fn compress_zstd(_data: &[u8], _level: i32) -> Result<Vec<u8>, WasmError> {
     Err(WasmError::new(
-        "Zstd compression is not available in WASM. Use compress_lz4 instead.".to_string()
+        "Zstd compression is not available in WASM. Use compress_lz4 instead.".to_string(),
     ))
 }
 
@@ -27,7 +27,8 @@ pub fn decompress_zstd(data: &[u8]) -> Result<Vec<u8>, WasmError> {
         .map_err(|e| WasmError::new(format!("Failed to create zstd decoder: {}", e)))?;
 
     let mut decompressed = Vec::new();
-    decoder.read_to_end(&mut decompressed)
+    decoder
+        .read_to_end(&mut decompressed)
         .map_err(|e| WasmError::new(format!("Zstd decompression failed: {}", e)))?;
 
     Ok(decompressed)
@@ -64,9 +65,8 @@ mod tests {
         // Pre-compressed data using native zstd (level 3)
         // Original: b"Hello, World!"
         let compressed: &[u8] = &[
-            0x28, 0xb5, 0x2f, 0xfd, 0x04, 0x00, 0x61, 0x00, 0x00, 0x48, 0x65, 0x6c,
-            0x6c, 0x6f, 0x2c, 0x20, 0x57, 0x6f, 0x72, 0x6c, 0x64, 0x21, 0x5b, 0xc2,
-            0x58, 0xca,
+            0x28, 0xb5, 0x2f, 0xfd, 0x04, 0x00, 0x61, 0x00, 0x00, 0x48, 0x65, 0x6c, 0x6c, 0x6f,
+            0x2c, 0x20, 0x57, 0x6f, 0x72, 0x6c, 0x64, 0x21, 0x5b, 0xc2, 0x58, 0xca,
         ];
         let decompressed = decompress_zstd(compressed).unwrap();
         assert_eq!(&decompressed, b"Hello, World!");

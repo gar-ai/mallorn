@@ -92,7 +92,8 @@ pub fn run(patch_path: &Path, verbose: bool) -> Result<()> {
             CompressionMethod::Lz4 => "LZ4".to_string(),
             CompressionMethod::Neural { .. } => "Neural".to_string(),
             CompressionMethod::Adaptive { strategy } => format!("Adaptive ({:?})", strategy),
-            CompressionMethod::ZstdDict { level, dict_id } => format!("Zstd+Dict (level {}, dict {})", level, dict_id),
+            CompressionMethod::ZstdDict { level, dict_id } =>
+                format!("Zstd+Dict (level {}, dict {})", level, dict_id),
         }
     );
 

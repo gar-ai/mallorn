@@ -173,8 +173,14 @@ impl DictionaryTrainer {
         }
 
         // Train dictionary using zstd's continuous training
-        let dict_data = zstd::dict::from_continuous(&continuous_data, &sample_sizes, self.max_dict_size)
-            .map_err(|e| CompressionError::CompressionFailed(format!("Dictionary training failed: {}", e)))?;
+        let dict_data =
+            zstd::dict::from_continuous(&continuous_data, &sample_sizes, self.max_dict_size)
+                .map_err(|e| {
+                    CompressionError::CompressionFailed(format!(
+                        "Dictionary training failed: {}",
+                        e
+                    ))
+                })?;
 
         // Create metadata
         let metadata = DictionaryMetadata {
@@ -203,14 +209,19 @@ impl DictionaryTrainer {
 
     /// Save a dictionary to bytes (for storage/transmission)
     pub fn save(dict: &CompressionDictionary) -> Result<Vec<u8>, CompressionError> {
-        serde_json::to_vec(dict)
-            .map_err(|e| CompressionError::CompressionFailed(format!("Failed to serialize dictionary: {}", e)))
+        serde_json::to_vec(dict).map_err(|e| {
+            CompressionError::CompressionFailed(format!("Failed to serialize dictionary: {}", e))
+        })
     }
 
     /// Load a dictionary from bytes
     pub fn load(data: &[u8]) -> Result<CompressionDictionary, CompressionError> {
-        serde_json::from_slice(data)
-            .map_err(|e| CompressionError::DecompressionFailed(format!("Failed to deserialize dictionary: {}", e)))
+        serde_json::from_slice(data).map_err(|e| {
+            CompressionError::DecompressionFailed(format!(
+                "Failed to deserialize dictionary: {}",
+                e
+            ))
+        })
     }
 }
 
@@ -263,25 +274,23 @@ impl ZstdDictCompressor {
 impl Compressor for ZstdDictCompressor {
     fn compress(&self, data: &[u8], _dtype: DataType) -> Result<Vec<u8>, CompressionError> {
         // Create encoder with dictionary
-        let mut encoder = zstd::Encoder::with_prepared_dictionary(
-            Vec::new(),
-            &self.encoder_dict,
-        ).map_err(|e| CompressionError::CompressionFailed(e.to_string()))?;
+        let mut encoder = zstd::Encoder::with_prepared_dictionary(Vec::new(), &self.encoder_dict)
+            .map_err(|e| CompressionError::CompressionFailed(e.to_string()))?;
 
         // Compress data
         std::io::copy(&mut std::io::Cursor::new(data), &mut encoder)
             .map_err(|e| CompressionError::CompressionFailed(e.to_string()))?;
 
-        encoder.finish()
+        encoder
+            .finish()
             .map_err(|e| CompressionError::CompressionFailed(e.to_string()))
     }
 
     fn decompress(&self, data: &[u8], _dtype: DataType) -> Result<Vec<u8>, CompressionError> {
         // Create decoder with dictionary
-        let mut decoder = zstd::Decoder::with_prepared_dictionary(
-            std::io::Cursor::new(data),
-            &self.decoder_dict,
-        ).map_err(|e| CompressionError::DecompressionFailed(e.to_string()))?;
+        let mut decoder =
+            zstd::Decoder::with_prepared_dictionary(std::io::Cursor::new(data), &self.decoder_dict)
+                .map_err(|e| CompressionError::DecompressionFailed(e.to_string()))?;
 
         // Decompress data
         let mut output = Vec::new();
@@ -329,10 +338,7 @@ impl NeuralCompressor {
 
         // Count zero float32s to determine sparsity
         let num_floats = data.len() / 4;
-        let zeros = data
-            .chunks_exact(4)
-            .filter(|c| *c == [0, 0, 0, 0])
-            .count();
+        let zeros = data.chunks_exact(4).filter(|c| *c == [0, 0, 0, 0]).count();
         let sparsity = zeros as f64 / num_floats as f64;
 
         if sparsity > 0.5 {
@@ -585,25 +591,29 @@ impl NeuralCompressor {
         let mut pos = 0;
 
         // Read num_floats
-        let num_floats = u32::from_le_bytes([data[pos], data[pos + 1], data[pos + 2], data[pos + 3]]) as usize;
+        let num_floats =
+            u32::from_le_bytes([data[pos], data[pos + 1], data[pos + 2], data[pos + 3]]) as usize;
         pos += 4;
 
         // Read and decompress plane 0
-        let len0 = u32::from_le_bytes([data[pos], data[pos + 1], data[pos + 2], data[pos + 3]]) as usize;
+        let len0 =
+            u32::from_le_bytes([data[pos], data[pos + 1], data[pos + 2], data[pos + 3]]) as usize;
         pos += 4;
         let plane0_delta = zstd::decode_all(std::io::Cursor::new(&data[pos..pos + len0]))
             .map_err(|e| CompressionError::DecompressionFailed(e.to_string()))?;
         pos += len0;
 
         // Read and decompress plane 1
-        let len1 = u32::from_le_bytes([data[pos], data[pos + 1], data[pos + 2], data[pos + 3]]) as usize;
+        let len1 =
+            u32::from_le_bytes([data[pos], data[pos + 1], data[pos + 2], data[pos + 3]]) as usize;
         pos += 4;
         let plane1_delta = zstd::decode_all(std::io::Cursor::new(&data[pos..pos + len1]))
             .map_err(|e| CompressionError::DecompressionFailed(e.to_string()))?;
         pos += len1;
 
         // Read and decompress plane 2
-        let len2 = u32::from_le_bytes([data[pos], data[pos + 1], data[pos + 2], data[pos + 3]]) as usize;
+        let len2 =
+            u32::from_le_bytes([data[pos], data[pos + 1], data[pos + 2], data[pos + 3]]) as usize;
         pos += 4;
         let plane2_delta = zstd::decode_all(std::io::Cursor::new(&data[pos..pos + len2]))
             .map_err(|e| CompressionError::DecompressionFailed(e.to_string()))?;
@@ -639,10 +649,12 @@ impl NeuralCompressor {
 
         let mut pos = 1;
 
-        let num_floats = u32::from_le_bytes([data[pos], data[pos + 1], data[pos + 2], data[pos + 3]]) as usize;
+        let num_floats =
+            u32::from_le_bytes([data[pos], data[pos + 1], data[pos + 2], data[pos + 3]]) as usize;
         pos += 4;
 
-        let len0 = u32::from_le_bytes([data[pos], data[pos + 1], data[pos + 2], data[pos + 3]]) as usize;
+        let len0 =
+            u32::from_le_bytes([data[pos], data[pos + 1], data[pos + 2], data[pos + 3]]) as usize;
         pos += 4;
         let plane0_delta = zstd::decode_all(std::io::Cursor::new(&data[pos..pos + len0]))
             .map_err(|e| CompressionError::DecompressionFailed(e.to_string()))?;
@@ -866,17 +878,23 @@ impl SparseCSR {
 
         let mut pos = 0;
 
-        let rows = u32::from_le_bytes([data[pos], data[pos+1], data[pos+2], data[pos+3]]) as usize;
+        let rows =
+            u32::from_le_bytes([data[pos], data[pos + 1], data[pos + 2], data[pos + 3]]) as usize;
         pos += 4;
-        let cols = u32::from_le_bytes([data[pos], data[pos+1], data[pos+2], data[pos+3]]) as usize;
+        let cols =
+            u32::from_le_bytes([data[pos], data[pos + 1], data[pos + 2], data[pos + 3]]) as usize;
         pos += 4;
-        let element_size = u32::from_le_bytes([data[pos], data[pos+1], data[pos+2], data[pos+3]]) as usize;
+        let element_size =
+            u32::from_le_bytes([data[pos], data[pos + 1], data[pos + 2], data[pos + 3]]) as usize;
         pos += 4;
-        let values_len = u32::from_le_bytes([data[pos], data[pos+1], data[pos+2], data[pos+3]]) as usize;
+        let values_len =
+            u32::from_le_bytes([data[pos], data[pos + 1], data[pos + 2], data[pos + 3]]) as usize;
         pos += 4;
-        let col_indices_len = u32::from_le_bytes([data[pos], data[pos+1], data[pos+2], data[pos+3]]) as usize;
+        let col_indices_len =
+            u32::from_le_bytes([data[pos], data[pos + 1], data[pos + 2], data[pos + 3]]) as usize;
         pos += 4;
-        let row_ptrs_len = u32::from_le_bytes([data[pos], data[pos+1], data[pos+2], data[pos+3]]) as usize;
+        let row_ptrs_len =
+            u32::from_le_bytes([data[pos], data[pos + 1], data[pos + 2], data[pos + 3]]) as usize;
         pos += 4;
 
         // Read values
@@ -892,7 +910,12 @@ impl SparseCSR {
         }
         let mut col_indices = Vec::with_capacity(col_indices_len);
         for _ in 0..col_indices_len {
-            col_indices.push(u32::from_le_bytes([data[pos], data[pos+1], data[pos+2], data[pos+3]]));
+            col_indices.push(u32::from_le_bytes([
+                data[pos],
+                data[pos + 1],
+                data[pos + 2],
+                data[pos + 3],
+            ]));
             pos += 4;
         }
 
@@ -902,7 +925,12 @@ impl SparseCSR {
         }
         let mut row_ptrs = Vec::with_capacity(row_ptrs_len);
         for _ in 0..row_ptrs_len {
-            row_ptrs.push(u32::from_le_bytes([data[pos], data[pos+1], data[pos+2], data[pos+3]]));
+            row_ptrs.push(u32::from_le_bytes([
+                data[pos],
+                data[pos + 1],
+                data[pos + 2],
+                data[pos + 3],
+            ]));
             pos += 4;
         }
 
@@ -1064,7 +1092,9 @@ impl SparseCompressor {
         let element_size = dtype.element_size().unwrap_or(4); // Default to 4 bytes
 
         // Check if sparse encoding is beneficial
-        if shape.len() >= 2 && SparseEncoder::is_beneficial(data, element_size, self.sparsity_threshold) {
+        if shape.len() >= 2
+            && SparseEncoder::is_beneficial(data, element_size, self.sparsity_threshold)
+        {
             if let Some(sparse) = SparseEncoder::encode_csr(data, element_size, shape) {
                 // Only use sparse if it actually compresses better
                 if SparseEncoder::compression_ratio(&sparse) > 1.0 {
@@ -1101,17 +1131,15 @@ impl SparseCompressor {
         match data[0] {
             SPARSE_CSR_FORMAT => {
                 let decompressed = self.inner.decompress(&data[1..], dtype)?;
-                let sparse = SparseCSR::from_bytes(&decompressed)
-                    .ok_or(CompressionError::InvalidData)?;
+                let sparse =
+                    SparseCSR::from_bytes(&decompressed).ok_or(CompressionError::InvalidData)?;
                 Ok(SparseEncoder::decode_csr(&sparse))
             }
             SPARSE_FORMAT => {
                 // RLE sparse format
                 self.decompress_sparse_rle(&data[1..])
             }
-            DENSE_FORMAT => {
-                self.inner.decompress(&data[1..], dtype)
-            }
+            DENSE_FORMAT => self.inner.decompress(&data[1..], dtype),
             _ => {
                 // Legacy format without marker - assume dense
                 self.inner.decompress(data, dtype)
@@ -1128,11 +1156,14 @@ impl SparseCompressor {
         let mut pos = 0;
 
         // Read header
-        let num_elements = u32::from_le_bytes([data[pos], data[pos+1], data[pos+2], data[pos+3]]) as usize;
+        let num_elements =
+            u32::from_le_bytes([data[pos], data[pos + 1], data[pos + 2], data[pos + 3]]) as usize;
         pos += 4;
-        let element_size = u32::from_le_bytes([data[pos], data[pos+1], data[pos+2], data[pos+3]]) as usize;
+        let element_size =
+            u32::from_le_bytes([data[pos], data[pos + 1], data[pos + 2], data[pos + 3]]) as usize;
         pos += 4;
-        let runs_len = u32::from_le_bytes([data[pos], data[pos+1], data[pos+2], data[pos+3]]) as usize;
+        let runs_len =
+            u32::from_le_bytes([data[pos], data[pos + 1], data[pos + 2], data[pos + 3]]) as usize;
         pos += 4;
 
         if pos + runs_len > data.len() {
@@ -1203,7 +1234,11 @@ impl Compressor for SparseCompressor {
 
 impl SparseCompressor {
     /// RLE encoding for sparse data without shape information
-    fn compress_sparse_rle(&self, data: &[u8], element_size: usize) -> Result<Vec<u8>, CompressionError> {
+    fn compress_sparse_rle(
+        &self,
+        data: &[u8],
+        element_size: usize,
+    ) -> Result<Vec<u8>, CompressionError> {
         let zero_element = vec![0u8; element_size];
         let num_elements = data.len() / element_size;
 
@@ -1325,11 +1360,7 @@ impl AdaptiveCompressor {
     }
 
     /// Benchmark all compressors and select best (smallest output)
-    fn select_benchmark(
-        &self,
-        data: &[u8],
-        dtype: DataType,
-    ) -> (&dyn Compressor, Vec<u8>) {
+    fn select_benchmark(&self, data: &[u8], dtype: DataType) -> (&dyn Compressor, Vec<u8>) {
         let candidates: Vec<&dyn Compressor> = vec![
             &self.zstd_low,
             &self.zstd_mid,
@@ -1353,7 +1384,10 @@ impl AdaptiveCompressor {
             }
         }
 
-        best.unwrap_or((&self.lz4, self.lz4.compress(data, dtype).unwrap_or_default()))
+        best.unwrap_or((
+            &self.lz4,
+            self.lz4.compress(data, dtype).unwrap_or_default(),
+        ))
     }
 
     /// Compress with full context, returning method used
@@ -1648,7 +1682,9 @@ mod tests {
         let data = vec![0u8; 1000];
         let compressor = ZstdCompressor::new(3);
         let compressed = compressor.compress(&data, DataType::Float32).unwrap();
-        let decompressed = compressor.decompress(&compressed, DataType::Float32).unwrap();
+        let decompressed = compressor
+            .decompress(&compressed, DataType::Float32)
+            .unwrap();
         assert_eq!(data, decompressed);
     }
 
@@ -1669,7 +1705,9 @@ mod tests {
 
         let compressor = NeuralCompressor::new(3);
         let compressed = compressor.compress(&data, DataType::Float32).unwrap();
-        let decompressed = compressor.decompress(&compressed, DataType::Float32).unwrap();
+        let decompressed = compressor
+            .decompress(&compressed, DataType::Float32)
+            .unwrap();
 
         assert_eq!(data, decompressed);
     }
@@ -1692,15 +1730,19 @@ mod tests {
     #[test]
     fn test_neural_byteplane_format() {
         // Create realistic neural weight data
-        let floats: Vec<f32> = (0..1024).map(|i| {
-            // Simulate typical weight distribution (small values around 0)
-            ((i as f32 - 512.0) / 1024.0) * 0.1
-        }).collect();
+        let floats: Vec<f32> = (0..1024)
+            .map(|i| {
+                // Simulate typical weight distribution (small values around 0)
+                ((i as f32 - 512.0) / 1024.0) * 0.1
+            })
+            .collect();
         let data: Vec<u8> = floats.iter().flat_map(|f| f.to_le_bytes()).collect();
 
         let compressor = NeuralCompressor::new(3);
         let compressed = compressor.compress(&data, DataType::Float32).unwrap();
-        let decompressed = compressor.decompress(&compressed, DataType::Float32).unwrap();
+        let decompressed = compressor
+            .decompress(&compressed, DataType::Float32)
+            .unwrap();
 
         assert_eq!(data, decompressed);
         // Verify we're using byteplane format (marker 0x03)
@@ -1720,18 +1762,24 @@ mod tests {
         assert_eq!(compressed[0], SPARSE_FORMAT);
 
         // Verify it decompresses to the correct size
-        let decompressed = compressor.decompress(&compressed, DataType::Float32).unwrap();
+        let decompressed = compressor
+            .decompress(&compressed, DataType::Float32)
+            .unwrap();
         assert_eq!(decompressed.len(), data.len());
     }
 
     #[test]
     fn test_neural_f16_roundtrip() {
         // Simulate float16 data (2 bytes per value)
-        let data: Vec<u8> = (0..512).flat_map(|i| [(i & 0xFF) as u8, (i >> 8) as u8]).collect();
+        let data: Vec<u8> = (0..512)
+            .flat_map(|i| [(i & 0xFF) as u8, (i >> 8) as u8])
+            .collect();
 
         let compressor = NeuralCompressor::new(3);
         let compressed = compressor.compress(&data, DataType::Float16).unwrap();
-        let decompressed = compressor.decompress(&compressed, DataType::Float16).unwrap();
+        let decompressed = compressor
+            .decompress(&compressed, DataType::Float16)
+            .unwrap();
 
         assert_eq!(data, decompressed);
     }
@@ -1739,10 +1787,12 @@ mod tests {
     #[test]
     fn test_neural_compression_ratio() {
         // Create data with high exponent redundancy (common in neural weights)
-        let floats: Vec<f32> = (0..4096).map(|i| {
-            // Many small weights with similar exponents
-            ((i % 100) as f32 - 50.0) * 0.001
-        }).collect();
+        let floats: Vec<f32> = (0..4096)
+            .map(|i| {
+                // Many small weights with similar exponents
+                ((i % 100) as f32 - 50.0) * 0.001
+            })
+            .collect();
         let data: Vec<u8> = floats.iter().flat_map(|f| f.to_le_bytes()).collect();
 
         let compressor = NeuralCompressor::new(5);
@@ -1761,7 +1811,9 @@ mod tests {
         );
 
         // Verify roundtrip
-        let decompressed = compressor.decompress(&neural_compressed, DataType::Float32).unwrap();
+        let decompressed = compressor
+            .decompress(&neural_compressed, DataType::Float32)
+            .unwrap();
         assert_eq!(data, decompressed);
     }
 
@@ -1823,12 +1875,15 @@ mod tests {
         assert_eq!(dict.metadata.num_samples, 4);
 
         // Test compression with dictionary
-        let compressor = ZstdDictCompressor::new(3, &dict).expect("Compressor creation should succeed");
+        let compressor =
+            ZstdDictCompressor::new(3, &dict).expect("Compressor creation should succeed");
 
         // Compress and decompress new data from same distribution
         let test_data = generate_model_sample(5, 100_000);
         let compressed = compressor.compress(&test_data, DataType::Float32).unwrap();
-        let decompressed = compressor.decompress(&compressed, DataType::Float32).unwrap();
+        let decompressed = compressor
+            .decompress(&compressed, DataType::Float32)
+            .unwrap();
 
         assert_eq!(test_data, decompressed);
     }
@@ -1853,8 +1908,12 @@ mod tests {
         // Compress test data from same distribution
         let test_data = generate_model_sample(4, 200_000);
 
-        let dict_compressed = dict_compressor.compress(&test_data, DataType::Float32).unwrap();
-        let regular_compressed = regular_compressor.compress(&test_data, DataType::Float32).unwrap();
+        let dict_compressed = dict_compressor
+            .compress(&test_data, DataType::Float32)
+            .unwrap();
+        let regular_compressed = regular_compressor
+            .compress(&test_data, DataType::Float32)
+            .unwrap();
 
         println!(
             "Dictionary compression: {} -> {} bytes ({:.1}%)",
@@ -1874,7 +1933,9 @@ mod tests {
         // For real model data, expect 20-50% improvement
 
         // Verify roundtrip
-        let decompressed = dict_compressor.decompress(&dict_compressed, DataType::Float32).unwrap();
+        let decompressed = dict_compressor
+            .decompress(&dict_compressed, DataType::Float32)
+            .unwrap();
         assert_eq!(test_data, decompressed);
     }
 
@@ -1928,7 +1989,9 @@ mod tests {
         // Test compression
         let test_data = generate_model_sample(4, 100_000);
         let compressed = compressor.compress(&test_data, DataType::Float32).unwrap();
-        let decompressed = compressor.decompress(&compressed, DataType::Float32).unwrap();
+        let decompressed = compressor
+            .decompress(&compressed, DataType::Float32)
+            .unwrap();
 
         assert_eq!(test_data, decompressed);
     }
@@ -1941,7 +2004,7 @@ mod tests {
     fn test_sparse_csr_encode_decode_roundtrip() {
         // Create a 10x10 matrix with 70% sparsity (30% non-zero)
         let mut data = vec![0u8; 10 * 10 * 4]; // 10x10 float32
-        // Set some non-zero values
+                                               // Set some non-zero values
         for i in [0, 5, 15, 23, 42, 57, 68, 73, 81, 99] {
             let val: f32 = (i as f32 + 1.0) * 0.1;
             let bytes = val.to_le_bytes();
@@ -2022,7 +2085,9 @@ mod tests {
 
         let compressor = SparseCompressor::new(3);
         let compressed = compressor.compress(&data, DataType::Float32).unwrap();
-        let decompressed = compressor.decompress(&compressed, DataType::Float32).unwrap();
+        let decompressed = compressor
+            .decompress(&compressed, DataType::Float32)
+            .unwrap();
 
         assert_eq!(data, decompressed);
     }
@@ -2037,8 +2102,12 @@ mod tests {
         }
 
         let compressor = SparseCompressor::new(3);
-        let compressed = compressor.compress_with_shape(&data, DataType::Float32, &[100, 100]).unwrap();
-        let decompressed = compressor.decompress_to_dense(&compressed, DataType::Float32).unwrap();
+        let compressed = compressor
+            .compress_with_shape(&data, DataType::Float32, &[100, 100])
+            .unwrap();
+        let decompressed = compressor
+            .decompress_to_dense(&compressed, DataType::Float32)
+            .unwrap();
 
         assert_eq!(data, decompressed);
 
@@ -2070,7 +2139,11 @@ mod tests {
         let ratio = SparseEncoder::compression_ratio(&sparse);
 
         // With 90% sparsity, CSR should compress significantly
-        assert!(ratio > 1.0, "Expected compression ratio > 1.0, got {}", ratio);
+        assert!(
+            ratio > 1.0,
+            "Expected compression ratio > 1.0, got {}",
+            ratio
+        );
         println!("90% sparse matrix CSR compression ratio: {:.2}x", ratio);
     }
 
@@ -2085,7 +2158,9 @@ mod tests {
         // Should use dense format (marker 0x02)
         assert_eq!(compressed[0], DENSE_FORMAT);
 
-        let decompressed = compressor.decompress(&compressed, DataType::Float32).unwrap();
+        let decompressed = compressor
+            .decompress(&compressed, DataType::Float32)
+            .unwrap();
         assert_eq!(data, decompressed);
     }
 
@@ -2154,9 +2229,7 @@ mod tests {
         // Create larger tensors to make compression meaningful
         let tensors: Vec<TensorData> = (0..8)
             .map(|i| {
-                let data: Vec<u8> = (0..4000)
-                    .map(|j| ((i * 17 + j * 13) % 256) as u8)
-                    .collect();
+                let data: Vec<u8> = (0..4000).map(|j| ((i * 17 + j * 13) % 256) as u8).collect();
                 TensorData {
                     name: format!("tensor_{}", i),
                     data,

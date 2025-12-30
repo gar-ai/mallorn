@@ -103,7 +103,10 @@ pub fn verify_signature(
             .with_context(|| format!("Failed to read public key {:?}", key_path))?;
 
         if key_bytes.len() != 32 {
-            anyhow::bail!("Invalid public key size: expected 32 bytes, got {}", key_bytes.len());
+            anyhow::bail!(
+                "Invalid public key size: expected 32 bytes, got {}",
+                key_bytes.len()
+            );
         }
 
         let key_array: [u8; 32] = key_bytes.try_into().unwrap();

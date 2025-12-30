@@ -404,7 +404,8 @@ impl GGUFParser {
                     .map_err(|e| ParseError::Malformed(e.to_string()))?;
                 let len = cursor
                     .read_u64::<LittleEndian>()
-                    .map_err(|e| ParseError::Malformed(e.to_string()))? as usize;
+                    .map_err(|e| ParseError::Malformed(e.to_string()))?
+                    as usize;
                 let mut arr = Vec::with_capacity(len);
                 for _ in 0..len {
                     arr.push(self.read_value(cursor, element_type)?);

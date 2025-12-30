@@ -72,7 +72,10 @@ pub fn info(path: &Path) -> Result<()> {
         println!("  Description: {}", desc);
     }
     if dictionary.metadata.created_at > 0 {
-        println!("  Created at:  {} (Unix timestamp)", dictionary.metadata.created_at);
+        println!(
+            "  Created at:  {} (Unix timestamp)",
+            dictionary.metadata.created_at
+        );
     }
 
     Ok(())

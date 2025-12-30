@@ -276,7 +276,8 @@ impl CoreMLParser {
 
             let offset = cursor
                 .read_u64::<LittleEndian>()
-                .map_err(|e| ParseError::Malformed(e.to_string()))? as usize;
+                .map_err(|e| ParseError::Malformed(e.to_string()))?
+                as usize;
 
             let size = cursor
                 .read_u64::<LittleEndian>()

@@ -25,7 +25,7 @@ jobs:
           components: rustfmt
       - run: cargo fmt --all -- --check
 
-  # Clippy lints
+  # Clippy lints (Linux - excludes macOS-only crates)
   clippy:
     name: Clippy
     runs-on: ubuntu-latest
@@ -35,7 +35,12 @@ jobs:
         with:
           components: clippy
       - uses: Swatinem/rust-cache@v2
-      - run: cargo clippy --all-targets --all-features -- -D warnings
+      - name: Install protoc
+        uses: arduino/setup-protoc@v3
+        with:
+          version: "25.x"
+      - name: Run Clippy
+        run: cargo clippy --workspace --exclude mallorn-coreml --all-targets -- -D warnings
 
   # Unit and integration tests
   test:
@@ -49,8 +54,18 @@ jobs:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
-      - name: Run tests
-        run: cargo test --all --all-features
+      - name: Install protoc
+        uses: arduino/setup-protoc@v3
+        with:
+          version: "25.x"
+      # Linux/Windows: exclude macOS-only crates (mallorn-coreml requires Objective-C)
+      - name: Run tests (Linux/Windows)
+        if: matrix.os != 'macos-latest'
+        run: cargo test --workspace --exclude mallorn-coreml --exclude mallorn-python
+      # macOS: can run all crates except Python (needs virtualenv)
+      - name: Run tests (macOS)
+        if: matrix.os == 'macos-latest'
+        run: cargo test --workspace --exclude mallorn-python
       - name: Run integration tests
         run: cargo test -p mallorn-cli --test integration_tests
         if: matrix.os == 'ubuntu-latest'
@@ -63,7 +78,12 @@ jobs:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
-      - run: cargo doc --all --all-features --no-deps
+      - name: Install protoc
+        uses: arduino/setup-protoc@v3
+        with:
+          version: "25.x"
+      - name: Build documentation
+        run: cargo doc --workspace --exclude mallorn-coreml --no-deps
         env:
           RUSTDOCFLAGS: -Dwarnings
 
@@ -75,10 +95,15 @@ jobs:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
+      - name: Install protoc
+        uses: arduino/setup-protoc@v3
+        with:
+          version: "25.x"
       - name: Install cargo-tarpaulin
         run: cargo install cargo-tarpaulin
       - name: Generate coverage
-        run: cargo tarpaulin --all --all-features --out Xml --skip-clean
+        # Exclude: mallorn-coreml (macOS-only), mallorn-python (needs venv), mallorn-candle (pulp SIMD issues)
+        run: cargo tarpaulin --workspace --exclude mallorn-coreml --exclude mallorn-python --exclude mallorn-candle --out Xml --skip-clean
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
@@ -88,13 +113,19 @@ jobs:
 
   # MSRV check
   msrv:
-    name: MSRV (1.74)
+    name: MSRV (1.80)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@1.74
+      - uses: dtolnay/rust-toolchain@1.80
       - uses: Swatinem/rust-cache@v2
-      - run: cargo check --all --all-features
+      - name: Install protoc
+        uses: arduino/setup-protoc@v3
+        with:
+          version: "25.x"
+      # Check core crates only - some dependencies may require newer Rust
+      - name: Check MSRV
+        run: cargo check --workspace --exclude mallorn-coreml --exclude mallorn-python --exclude mallorn-candle
 
   # Python bindings
   python:
@@ -107,10 +138,18 @@ jobs:
         with:
           python-version: '3.11'
       - uses: Swatinem/rust-cache@v2
-      - name: Install maturin
-        run: pip install maturin pytest
+      - name: Install protoc
+        uses: arduino/setup-protoc@v3
+        with:
+          version: "25.x"
+      - name: Create virtualenv and install dependencies
+        run: |
+          python -m venv .venv
+          source .venv/bin/activate
+          pip install maturin pytest
       - name: Build and test Python bindings
         run: |
+          source .venv/bin/activate
           cd crates/mallorn-python
           maturin develop
           python -c "import mallorn; print(mallorn.__doc__)"
@@ -123,4 +162,10 @@ jobs:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
-      - run: cargo build --all --all-features --release
+      - name: Install protoc
+        uses: arduino/setup-protoc@v3
+        with:
+          version: "25.x"
+      # Exclude macOS-only crates on Linux
+      - name: Build workspace
+        run: cargo build --workspace --exclude mallorn-coreml --release

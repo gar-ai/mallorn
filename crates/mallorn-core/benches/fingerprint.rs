@@ -42,21 +42,13 @@ fn bench_fingerprint_generation(c: &mut Criterion) {
         temp_file.flush().unwrap();
         let path = temp_file.path().to_owned();
 
-        group.bench_with_input(
-            BenchmarkId::new("from_file", label),
-            &path,
-            |b, path| {
-                b.iter(|| ModelFingerprint::from_file(black_box(path)))
-            },
-        );
+        group.bench_with_input(BenchmarkId::new("from_file", label), &path, |b, path| {
+            b.iter(|| ModelFingerprint::from_file(black_box(path)))
+        });
 
-        group.bench_with_input(
-            BenchmarkId::new("from_bytes", label),
-            &data,
-            |b, data| {
-                b.iter(|| ModelFingerprint::from_bytes(black_box(data)))
-            },
-        );
+        group.bench_with_input(BenchmarkId::new("from_bytes", label), &data, |b, data| {
+            b.iter(|| ModelFingerprint::from_bytes(black_box(data)))
+        });
     }
 
     group.finish();

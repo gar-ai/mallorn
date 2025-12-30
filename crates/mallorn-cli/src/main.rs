@@ -17,7 +17,9 @@ use std::path::PathBuf;
 #[derive(Parser)]
 #[command(name = "mallorn")]
 #[command(author, version, about = "Edge model delta updates for ML models")]
-#[command(long_about = "Mallorn creates minimal delta patches for ML models, reducing OTA bandwidth by 95%+.\n\nSupported formats: TFLite, GGUF, ONNX, SafeTensors, OpenVINO, CoreML, TensorRT")]
+#[command(
+    long_about = "Mallorn creates minimal delta patches for ML models, reducing OTA bandwidth by 95%+.\n\nSupported formats: TFLite, GGUF, ONNX, SafeTensors, OpenVINO, CoreML, TensorRT"
+)]
 struct Cli {
     #[command(subcommand)]
     command: Commands,
@@ -345,7 +347,15 @@ fn main() -> anyhow::Result<()> {
             neural,
             dict,
             parallel,
-        } => diff::run(&old, &new, &output, level, neural, dict.as_deref(), parallel),
+        } => diff::run(
+            &old,
+            &new,
+            &output,
+            level,
+            neural,
+            dict.as_deref(),
+            parallel,
+        ),
 
         Commands::Patch {
             model,

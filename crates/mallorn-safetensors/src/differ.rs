@@ -35,9 +35,10 @@ impl SafeTensorsDiffer {
             }
             CompressionMethod::ZstdDict { level, .. } => {
                 if let Some(ref dict) = options.dictionary {
-                    Box::new(ZstdDictCompressor::new(*level, dict).unwrap_or_else(|_| {
-                        panic!("Failed to create ZstdDictCompressor")
-                    }))
+                    Box::new(
+                        ZstdDictCompressor::new(*level, dict)
+                            .unwrap_or_else(|_| panic!("Failed to create ZstdDictCompressor")),
+                    )
                 } else {
                     Box::new(ZstdCompressor::new(*level))
                 }
@@ -48,7 +49,10 @@ impl SafeTensorsDiffer {
             CompressionMethod::Adaptive { .. } => Box::new(ZstdCompressor::new(3)),
         };
 
-        Self { compressor, options }
+        Self {
+            compressor,
+            options,
+        }
     }
 
     /// Diff two SafeTensors models from raw bytes

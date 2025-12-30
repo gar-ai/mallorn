@@ -111,11 +111,7 @@ impl NeuralCompressor {
     ///
     /// Combines byte-plane separation with delta encoding for
     /// optimal fine-tuning patch compression.
-    pub fn delta_compress(
-        device: &GpuDevice,
-        old: &[u8],
-        new: &[u8],
-    ) -> Result<Vec<u8>, GpuError> {
+    pub fn delta_compress(device: &GpuDevice, old: &[u8], new: &[u8]) -> Result<Vec<u8>, GpuError> {
         if old.len() != new.len() {
             return Err(GpuError::SizeMismatch {
                 expected: old.len(),

@@ -117,10 +117,9 @@ impl ONNXDataType {
             Self::Float16 | Self::BFloat16 | Self::Int16 | Self::UInt16 => Some(2),
             Self::Int8 | Self::UInt8 | Self::Bool => Some(1),
             Self::Complex128 => Some(16),
-            Self::Float8E4M3FN
-            | Self::Float8E4M3FNUZ
-            | Self::Float8E5M2
-            | Self::Float8E5M2FNUZ => Some(1),
+            Self::Float8E4M3FN | Self::Float8E4M3FNUZ | Self::Float8E5M2 | Self::Float8E5M2FNUZ => {
+                Some(1)
+            }
             Self::UInt4 | Self::Int4 => None, // Packed nibbles
             Self::String | Self::Undefined => None,
         }
@@ -292,7 +291,11 @@ impl ONNXParser {
     }
 
     /// Reconstruct model bytes with updated tensors
-    pub fn reconstruct(&self, model: &ONNXModel, new_tensors: &[ONNXTensor]) -> Result<Vec<u8>, ParseError> {
+    pub fn reconstruct(
+        &self,
+        model: &ONNXModel,
+        new_tensors: &[ONNXTensor],
+    ) -> Result<Vec<u8>, ParseError> {
         let mut proto = model.proto.clone();
 
         // Update graph initializers with new tensor data

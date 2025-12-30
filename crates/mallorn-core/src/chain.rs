@@ -307,7 +307,11 @@ pub fn chain_stats(chain: &PatchChain) -> ChainStats {
 ///
 /// Note: This is a metadata-level merge. The actual patch squashing
 /// requires format-specific logic and is done in format crates.
-pub fn merge_chain_metadata(chain: &PatchChain, from_idx: usize, to_idx: usize) -> Option<ChainLink> {
+pub fn merge_chain_metadata(
+    chain: &PatchChain,
+    from_idx: usize,
+    to_idx: usize,
+) -> Option<ChainLink> {
     if from_idx > to_idx || to_idx >= chain.links.len() {
         return None;
     }
@@ -341,7 +345,11 @@ pub fn merge_chain_metadata(chain: &PatchChain, from_idx: usize, to_idx: usize) 
 }
 
 /// Create a new chain from a subset of links.
-pub fn subchain(chain: &PatchChain, from_hash: &[u8; 32], to_hash: &[u8; 32]) -> Option<PatchChain> {
+pub fn subchain(
+    chain: &PatchChain,
+    from_hash: &[u8; 32],
+    to_hash: &[u8; 32],
+) -> Option<PatchChain> {
     let links = chain.links_between(from_hash, to_hash)?;
 
     if links.is_empty() {
@@ -350,8 +358,12 @@ pub fn subchain(chain: &PatchChain, from_hash: &[u8; 32], to_hash: &[u8; 32]) ->
 
     let mut new_chain = PatchChain::new(format!("{}_subset", chain.chain_id));
     new_chain.metadata = ChainMetadata {
-        base_version: links.first().and_then(|l| l.link_metadata.source_version.clone()),
-        head_version: links.last().and_then(|l| l.link_metadata.target_version.clone()),
+        base_version: links
+            .first()
+            .and_then(|l| l.link_metadata.source_version.clone()),
+        head_version: links
+            .last()
+            .and_then(|l| l.link_metadata.target_version.clone()),
         total_links: links.len(),
         created_at: std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)
@@ -429,8 +441,14 @@ mod tests {
         // Verify
         assert_eq!(deserialized.chain_id, chain.chain_id);
         assert_eq!(deserialized.links.len(), chain.links.len());
-        assert_eq!(deserialized.links[0].source_hash, chain.links[0].source_hash);
-        assert_eq!(deserialized.links[1].target_hash, chain.links[1].target_hash);
+        assert_eq!(
+            deserialized.links[0].source_hash,
+            chain.links[0].source_hash
+        );
+        assert_eq!(
+            deserialized.links[1].target_hash,
+            chain.links[1].target_hash
+        );
     }
 
     #[test]

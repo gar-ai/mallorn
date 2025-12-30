@@ -57,8 +57,7 @@ impl SignedPatch {
         let mut message = self.version.to_le_bytes().to_vec();
         message.extend_from_slice(&patch_hash);
 
-        let signature =
-            Signature::from_bytes(&self.signature);
+        let signature = Signature::from_bytes(&self.signature);
 
         verifying_key
             .verify(&message, &signature)
@@ -68,7 +67,10 @@ impl SignedPatch {
     }
 
     /// Verify against a specific trusted public key
-    pub fn verify_with_key(&self, trusted_key: &[u8; PUBLIC_KEY_LENGTH]) -> Result<&[u8], SignatureError> {
+    pub fn verify_with_key(
+        &self,
+        trusted_key: &[u8; PUBLIC_KEY_LENGTH],
+    ) -> Result<&[u8], SignatureError> {
         // Check the public key matches
         if self.public_key != *trusted_key {
             return Err(SignatureError::UntrustedKey);
@@ -296,6 +298,9 @@ mod tests {
         signed.patch_data[0] = b'X';
 
         // Verification should fail
-        assert!(matches!(signed.verify(), Err(SignatureError::InvalidSignature)));
+        assert!(matches!(
+            signed.verify(),
+            Err(SignatureError::InvalidSignature)
+        ));
     }
 }

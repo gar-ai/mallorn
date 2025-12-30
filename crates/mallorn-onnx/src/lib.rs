@@ -29,6 +29,8 @@ mod onnx_proto {
 }
 
 pub use differ::ONNXDiffer;
-pub use format::{deserialize_patch, extension, is_onxp, serialize_patch, ONXP_MAGIC, ONXP_VERSION};
+pub use format::{
+    deserialize_patch, extension, is_onxp, serialize_patch, ONXP_MAGIC, ONXP_VERSION,
+};
 pub use parser::{ONNXDataType, ONNXModel, ONNXParser, ONNXTensor};
 pub use patcher::ONNXPatcher;

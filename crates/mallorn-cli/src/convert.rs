@@ -30,7 +30,11 @@ pub fn run(input: &Path, output: &Path) -> Result<()> {
 
     let ratio = streaming_data.len() as f64 / data.len() as f64 * 100.0;
     println!("  Input size:  {} bytes", data.len());
-    println!("  Output size: {} bytes ({:.1}%)", streaming_data.len(), ratio);
+    println!(
+        "  Output size: {} bytes ({:.1}%)",
+        streaming_data.len(),
+        ratio
+    );
     println!("Conversion complete!");
 
     Ok(())
@@ -53,7 +57,10 @@ fn detect_and_deserialize(data: &[u8]) -> Result<Patch> {
     } else {
         bail!(
             "Unknown patch format (magic: {:02x} {:02x} {:02x} {:02x})",
-            magic[0], magic[1], magic[2], magic[3]
+            magic[0],
+            magic[1],
+            magic[2],
+            magic[3]
         )
     }
 }

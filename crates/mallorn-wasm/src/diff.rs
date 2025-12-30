@@ -1,7 +1,7 @@
 //! Delta computation for WASM
 
-use wasm_bindgen::prelude::*;
 use crate::WasmError;
+use wasm_bindgen::prelude::*;
 
 /// Compute XOR delta between two byte arrays
 #[wasm_bindgen]

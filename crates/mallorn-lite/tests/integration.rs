@@ -3,8 +3,8 @@
 //! These tests verify end-to-end patching with in-memory I/O callbacks.
 
 use mallorn_lite::{
-    CompressionType, PatchFooter, PatchHeader, StreamingPatcher, TensorOp,
-    PATCH_MAGIC, PATCH_VERSION, MIN_BUFFER_SIZE,
+    CompressionType, PatchFooter, PatchHeader, StreamingPatcher, TensorOp, MIN_BUFFER_SIZE,
+    PATCH_MAGIC, PATCH_VERSION,
 };
 use std::cell::RefCell;
 
@@ -53,11 +53,7 @@ extern "C" fn mem_read(ctx: *mut u8, buf: *mut u8, max_len: usize) -> usize {
 
     if to_read > 0 {
         unsafe {
-            std::ptr::copy_nonoverlapping(
-                reader.data[reader.pos..].as_ptr(),
-                buf,
-                to_read,
-            );
+            std::ptr::copy_nonoverlapping(reader.data[reader.pos..].as_ptr(), buf, to_read);
         }
         reader.pos += to_read;
     }
@@ -85,7 +81,7 @@ fn build_patch(
     let mut patch = Vec::new();
 
     // Calculate total uncompressed size
-    let total_size: u32 = ops.iter().map(|(op, _)| { op.size }).sum();
+    let total_size: u32 = ops.iter().map(|(op, _)| op.size).sum();
 
     // Write header
     let header = PatchHeader {
@@ -201,7 +197,10 @@ fn test_empty_patch() {
     assert_eq!(result, 0, "Empty patch should succeed");
 
     // Verify with correct hash
-    assert!(patcher.verify(&target_hash), "Hash verification should pass");
+    assert!(
+        patcher.verify(&target_hash),
+        "Hash verification should pass"
+    );
 
     // Verify with wrong hash
     let wrong_hash = [2u8; 32];
@@ -236,7 +235,10 @@ fn test_copy_operation() {
 
     // Verify output matches source (copy = identical)
     let output_data = output.borrow().data.clone();
-    assert_eq!(output_data, source_data, "Output should match source for copy");
+    assert_eq!(
+        output_data, source_data,
+        "Output should match source for copy"
+    );
 }
 
 #[test]
@@ -276,7 +278,10 @@ fn test_replace_operation_uncompressed() {
     assert_eq!(result, 0, "Replace operation should succeed");
 
     let output_data = output.borrow().data.clone();
-    assert_eq!(output_data, replacement, "Output should match replacement data");
+    assert_eq!(
+        output_data, replacement,
+        "Output should match replacement data"
+    );
 }
 
 #[test]
@@ -294,11 +299,7 @@ fn test_delta_operation_uncompressed() {
         delta_data.len() as u32,
         CompressionType::None,
     );
-    let patch_data = build_patch(
-        source_hash,
-        target_hash,
-        &[(delta_op, Some(&delta_data))],
-    );
+    let patch_data = build_patch(source_hash, target_hash, &[(delta_op, Some(&delta_data))]);
 
     // Set up I/O
     let source = MemReader::new(source_data).into_boxed();
@@ -338,11 +339,7 @@ fn test_replace_with_lz4_compression() {
         compressed.len() as u32,
         CompressionType::Lz4,
     );
-    let patch_data = build_patch(
-        source_hash,
-        target_hash,
-        &[(replace_op, Some(&compressed))],
-    );
+    let patch_data = build_patch(source_hash, target_hash, &[(replace_op, Some(&compressed))]);
 
     // Set up I/O
     let source = MemReader::new(source_data).into_boxed();
@@ -361,16 +358,17 @@ fn test_replace_with_lz4_compression() {
     assert_eq!(result, 0, "LZ4 compressed replace should succeed");
 
     let output_data = output.borrow().data.clone();
-    assert_eq!(output_data, replacement, "Output should match decompressed replacement");
+    assert_eq!(
+        output_data, replacement,
+        "Output should match decompressed replacement"
+    );
 }
 
 #[test]
 fn test_multiple_operations() {
     // Source: [AAAA][BBBB][CCCC] (12 bytes, 3 segments)
     let source_data = vec![
-        0xAA, 0xAA, 0xAA, 0xAA,
-        0xBB, 0xBB, 0xBB, 0xBB,
-        0xCC, 0xCC, 0xCC, 0xCC,
+        0xAA, 0xAA, 0xAA, 0xAA, 0xBB, 0xBB, 0xBB, 0xBB, 0xCC, 0xCC, 0xCC, 0xCC,
     ];
     let source_hash = [0u8; 32];
     let target_hash = [1u8; 32];
@@ -388,11 +386,7 @@ fn test_multiple_operations() {
     let patch_data = build_patch(
         source_hash,
         target_hash,
-        &[
-            (op1, None),
-            (op2, Some(&replacement)),
-            (op3, None),
-        ],
+        &[(op1, None), (op2, Some(&replacement)), (op3, None)],
     );
 
     // Set up I/O
@@ -417,7 +411,10 @@ fn test_multiple_operations() {
         0xDD, 0xDD, 0xDD, 0xDD, // Replaced
         0xCC, 0xCC, 0xCC, 0xCC, // Copied
     ];
-    assert_eq!(output_data, expected, "Output should have middle segment replaced");
+    assert_eq!(
+        output_data, expected,
+        "Output should have middle segment replaced"
+    );
 }
 
 #[test]
@@ -470,7 +467,10 @@ fn test_hash_verification() {
 
     // Different hash should fail
     let different_hash = [2u8; 32];
-    assert!(!patcher.verify(&different_hash), "Different hash should fail");
+    assert!(
+        !patcher.verify(&different_hash),
+        "Different hash should fail"
+    );
 
     // All zeros should fail
     let zero_hash = [0u8; 32];
@@ -493,6 +493,9 @@ fn test_abort() {
 fn test_patcher_size_for_c() {
     // Verify patcher struct size is reasonable for stack allocation
     let size = std::mem::size_of::<StreamingPatcher>();
-    assert!(size < 512, "Patcher struct should be small enough for embedded stack");
+    assert!(
+        size < 512,
+        "Patcher struct should be small enough for embedded stack"
+    );
     println!("StreamingPatcher size: {} bytes", size);
 }

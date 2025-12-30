@@ -130,7 +130,12 @@ impl TensorOp {
     }
 
     /// Create a replace operation
-    pub fn replace(offset: u32, size: u32, payload_size: u32, compression: CompressionType) -> Self {
+    pub fn replace(
+        offset: u32,
+        size: u32,
+        payload_size: u32,
+        compression: CompressionType,
+    ) -> Self {
         Self {
             op_type: OpType::Replace as u8,
             compression: compression as u8,

@@ -41,9 +41,10 @@ impl ONNXDiffer {
             }
             CompressionMethod::ZstdDict { level, .. } => {
                 if let Some(ref dict) = options.dictionary {
-                    Arc::new(ZstdDictCompressor::new(*level, dict).unwrap_or_else(|_| {
-                        panic!("Failed to create ZstdDictCompressor")
-                    }))
+                    Arc::new(
+                        ZstdDictCompressor::new(*level, dict)
+                            .unwrap_or_else(|_| panic!("Failed to create ZstdDictCompressor")),
+                    )
                 } else {
                     Arc::new(ZstdCompressor::new(*level))
                 }
@@ -109,10 +110,7 @@ impl ONNXDiffer {
                 source_version: old.producer_version.clone(),
                 target_version: new.producer_version.clone(),
                 created_at,
-                description: Some(format!(
-                    "ONNX model patch ({} tensors)",
-                    new.tensors.len()
-                )),
+                description: Some(format!("ONNX model patch ({} tensors)", new.tensors.len())),
             },
         })
     }

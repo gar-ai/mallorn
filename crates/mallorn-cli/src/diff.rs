@@ -16,7 +16,9 @@ fn detect_format(path: &Path, data: &[u8]) -> Result<ModelFormat> {
             return Ok(ModelFormat::TFLite);
         }
         // GGUF magic
-        if &data[0..4] == b"GGUF" || u32::from_le_bytes([data[0], data[1], data[2], data[3]]) == 0x46554747 {
+        if &data[0..4] == b"GGUF"
+            || u32::from_le_bytes([data[0], data[1], data[2], data[3]]) == 0x46554747
+        {
             return Ok(ModelFormat::GGUF);
         }
         // SafeTensors: JSON header starting with '{' after 8-byte size prefix
@@ -126,12 +128,13 @@ pub fn run(
     // Create patch based on format
     let (patch, patch_bytes) = match old_format {
         ModelFormat::TFLite => {
-            let differ = mallorn_tflite::TFLiteDiffer::with_options(options).with_parallel(parallel);
+            let differ =
+                mallorn_tflite::TFLiteDiffer::with_options(options).with_parallel(parallel);
             let patch = differ
                 .diff_from_bytes(&old_data, &new_data)
                 .context("Failed to compute diff")?;
-            let bytes = mallorn_tflite::serialize_patch(&patch)
-                .context("Failed to serialize patch")?;
+            let bytes =
+                mallorn_tflite::serialize_patch(&patch).context("Failed to serialize patch")?;
             (patch, bytes)
         }
         ModelFormat::GGUF => {
@@ -157,8 +160,8 @@ pub fn run(
             let patch = differ
                 .diff_from_bytes(&old_data, &new_data)
                 .context("Failed to compute diff")?;
-            let bytes = mallorn_openvino::serialize_patch(&patch)
-                .context("Failed to serialize patch")?;
+            let bytes =
+                mallorn_openvino::serialize_patch(&patch).context("Failed to serialize patch")?;
             (patch, bytes)
         }
         ModelFormat::CoreML => {
@@ -166,8 +169,8 @@ pub fn run(
             let patch = differ
                 .diff_from_bytes(&old_data, &new_data)
                 .context("Failed to compute diff")?;
-            let bytes = mallorn_coreml::serialize_patch(&patch)
-                .context("Failed to serialize patch")?;
+            let bytes =
+                mallorn_coreml::serialize_patch(&patch).context("Failed to serialize patch")?;
             (patch, bytes)
         }
         ModelFormat::ONNX => {
@@ -211,7 +214,10 @@ pub fn run(
                 println!();
                 println!("TensorRT Workflow:");
                 println!("  1. Apply patch: mallorn patch model.onnx update.trtp -o new.onnx");
-                println!("  2. Rebuild engine: {}", patch.config.to_trtexec_command("new.onnx", "new.engine"));
+                println!(
+                    "  2. Rebuild engine: {}",
+                    patch.config.to_trtexec_command("new.onnx", "new.engine")
+                );
                 return Ok(());
             }
 
@@ -220,8 +226,8 @@ pub fn run(
             let patch = differ
                 .diff_from_bytes(&old_data, &new_data)
                 .context("Failed to compute diff")?;
-            let bytes = mallorn_onnx::serialize_patch(&patch)
-                .context("Failed to serialize patch")?;
+            let bytes =
+                mallorn_onnx::serialize_patch(&patch).context("Failed to serialize patch")?;
             (patch, bytes)
         }
     };

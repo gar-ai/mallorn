@@ -34,7 +34,9 @@ mod parser;
 mod patcher;
 
 pub use differ::OpenVINODiffer;
-pub use format::{deserialize_patch, extension, is_ovinp, serialize_patch, OVIN_MAGIC, OVIN_VERSION};
+pub use format::{
+    deserialize_patch, extension, is_ovinp, serialize_patch, OVIN_MAGIC, OVIN_VERSION,
+};
 pub use parser::{OpenVINOModel, OpenVINOParser, OpenVINOTensor};
 pub use patcher::OpenVINOPatcher;
 

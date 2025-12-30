@@ -1,9 +1,9 @@
 //! Patch application for WASM
 
-use wasm_bindgen::prelude::*;
-use sha2::{Sha256, Digest};
+use crate::compress::{compress_lz4, decompress_lz4, decompress_zstd};
 use crate::WasmError;
-use crate::compress::{decompress_zstd, compress_lz4, decompress_lz4};
+use sha2::{Digest, Sha256};
+use wasm_bindgen::prelude::*;
 
 /// Patch application result
 #[wasm_bindgen]
@@ -105,7 +105,11 @@ pub fn apply_patch(model: &[u8], patch: &[u8]) -> Result<PatchResult, WasmError>
 /// Note: In WASM, patches are compressed with LZ4 (pure-Rust).
 /// The compression_level parameter is ignored in WASM builds.
 #[wasm_bindgen]
-pub fn create_patch(old_model: &[u8], new_model: &[u8], _compression_level: i32) -> Result<Vec<u8>, WasmError> {
+pub fn create_patch(
+    old_model: &[u8],
+    new_model: &[u8],
+    _compression_level: i32,
+) -> Result<Vec<u8>, WasmError> {
     if old_model.len() != new_model.len() {
         return Err(WasmError::new("Model sizes must match"));
     }
@@ -153,7 +157,8 @@ pub fn patch_info(patch: &[u8]) -> Result<String, WasmError> {
         "source_hash": source_hash,
         "target_hash": target_hash,
         "compressed_size": compressed_size
-    }).to_string())
+    })
+    .to_string())
 }
 
 #[cfg(test)]

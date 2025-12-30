@@ -469,8 +469,9 @@ mod tests {
 
         let hash = hash_file(&path).unwrap();
         // Known SHA256 of "hello world"
-        let expected = hex::decode("b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9")
-            .unwrap();
+        let expected =
+            hex::decode("b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9")
+                .unwrap();
         assert_eq!(hash.as_slice(), expected.as_slice());
     }
 
@@ -485,12 +486,11 @@ mod tests {
         }
 
         // Correct hash
-        let correct_hash: [u8; 32] = hex::decode(
-            "b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9",
-        )
-        .unwrap()
-        .try_into()
-        .unwrap();
+        let correct_hash: [u8; 32] =
+            hex::decode("b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9")
+                .unwrap()
+                .try_into()
+                .unwrap();
         assert!(verify_download(&path, &correct_hash).unwrap());
 
         // Wrong hash
