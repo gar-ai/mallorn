@@ -13,8 +13,9 @@ impl NeuralCompressor {
     ///
     /// Splits 32-bit floats into 4 byte planes, which compress better
     /// because similar exponents cluster together.
+    #[allow(clippy::manual_is_multiple_of)]
     pub fn compress(device: &GpuDevice, data: &[u8]) -> Result<Vec<u8>, GpuError> {
-        if !data.len().is_multiple_of(4) {
+        if data.len() % 4 != 0 {
             return Err(GpuError::InvalidInput(
                 "Data length must be multiple of 4 for neural compression".to_string(),
             ));
@@ -70,7 +71,8 @@ impl NeuralCompressor {
             });
         }
 
-        if !original_len.is_multiple_of(4) {
+        #[allow(clippy::manual_is_multiple_of)]
+        if original_len % 4 != 0 {
             return Err(GpuError::InvalidInput(
                 "Original length must be multiple of 4".to_string(),
             ));
