@@ -1,0 +1,22 @@
+[package]
+name = "mallorn-tensorrt"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "TensorRT support for Mallorn (ONNX-based workflow)"
+
+[dependencies]
+mallorn-core = { workspace = true }
+mallorn-onnx = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+byteorder = { workspace = true }
+crc32fast = { workspace = true }
+
+[dev-dependencies]
+tempfile = { workspace = true }
+criterion = { workspace = true }
+
+[[bench]]
+name = "tensorrt"
+harness = false

@@ -1,0 +1,40 @@
+[package]
+name = "mallorn-tflite"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "TFLite format support for Mallorn edge model delta updates"
+
+[dependencies]
+mallorn-core = { workspace = true }
+
+# FlatBuffer parsing
+flatbuffers = { workspace = true }
+
+# Serialization
+serde = { workspace = true }
+serde_json = { workspace = true }
+
+# Binary handling
+byteorder = { workspace = true }
+
+# Hashing
+crc32fast = { workspace = true }
+
+# Error handling
+thiserror = { workspace = true }
+
+# Parallelism
+rayon = { workspace = true }
+
+[dev-dependencies]
+tempfile = { workspace = true }
+criterion = { workspace = true }
+
+[[bench]]
+name = "parsing"
+harness = false
+
+[[bench]]
+name = "real_models"
+harness = false

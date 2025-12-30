@@ -1,0 +1,31 @@
+[package]
+name = "mallorn-gguf"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "GGUF format support for Mallorn edge model delta updates"
+
+[dependencies]
+mallorn-core = { workspace = true }
+
+# Serialization
+serde = { workspace = true }
+serde_json = { workspace = true }
+
+# Binary handling
+byteorder = { workspace = true }
+
+# Compression (LZ4 preferred for quantized)
+lz4_flex = { workspace = true }
+
+# Hashing
+crc32fast = { workspace = true }
+
+# Error handling
+thiserror = { workspace = true }
+
+# Parallelism
+rayon = { workspace = true }
+
+[dev-dependencies]
+tempfile = { workspace = true }

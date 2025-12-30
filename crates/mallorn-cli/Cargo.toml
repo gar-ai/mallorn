@@ -1,0 +1,41 @@
+[package]
+name = "mallorn-cli"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Command-line interface for Mallorn edge model delta updates"
+
+[[bin]]
+name = "mallorn"
+path = "src/main.rs"
+
+[dependencies]
+mallorn-core = { workspace = true }
+mallorn-tflite = { workspace = true }
+mallorn-gguf = { workspace = true }
+mallorn-safetensors = { workspace = true }
+mallorn-openvino = { workspace = true }
+mallorn-coreml = { workspace = true }
+mallorn-tensorrt = { workspace = true }
+mallorn-onnx = { workspace = true }
+mallorn-lite = { path = "../mallorn-lite" }
+lz4_flex = { workspace = true }
+crc32fast = { workspace = true }
+
+# CLI
+clap = { workspace = true }
+indicatif = { workspace = true }
+anyhow = { workspace = true }
+hex = { workspace = true }
+byteorder = { workspace = true }
+serde_json = { workspace = true }
+
+# HTTP downloads
+reqwest = { workspace = true }
+
+# Cryptographic signatures
+ed25519-dalek = { workspace = true }
+rand = { workspace = true }
+
+[dev-dependencies]
+tempfile = { workspace = true }

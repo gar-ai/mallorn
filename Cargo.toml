@@ -1,0 +1,107 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/mallorn-core",
+    "crates/mallorn-tflite",
+    "crates/mallorn-gguf",
+    "crates/mallorn-onnx",
+    "crates/mallorn-safetensors",
+    "crates/mallorn-openvino",
+    "crates/mallorn-coreml",
+    "crates/mallorn-tensorrt",
+    "crates/mallorn-cli",
+    "crates/mallorn-python",
+    "crates/mallorn-lite",
+    "crates/mallorn-candle",
+    "crates/mallorn-wasm",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.74"
+license = "MIT OR Apache-2.0"
+authors = ["Mallorn Contributors"]
+repository = "https://github.com/user/mallorn"
+description = "Edge model delta updates for TFLite and GGUF models"
+
+[workspace.dependencies]
+# Internal crates
+mallorn-core = { path = "crates/mallorn-core" }
+mallorn-tflite = { path = "crates/mallorn-tflite" }
+mallorn-gguf = { path = "crates/mallorn-gguf" }
+mallorn-onnx = { path = "crates/mallorn-onnx" }
+mallorn-safetensors = { path = "crates/mallorn-safetensors" }
+mallorn-openvino = { path = "crates/mallorn-openvino" }
+mallorn-coreml = { path = "crates/mallorn-coreml" }
+mallorn-tensorrt = { path = "crates/mallorn-tensorrt" }
+
+# Serialization
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# Binary formats
+flatbuffers = "24"
+byteorder = "1"
+
+# Protobuf (for ONNX)
+prost = "0.13"
+prost-build = "0.13"
+
+# XML (for OpenVINO)
+quick-xml = "0.31"
+
+# Compression
+zstd = "0.13"
+lz4_flex = "0.11"
+ruzstd = "0.7"  # Pure-Rust zstd decoder for WASM
+
+# Hashing
+sha2 = "0.10"
+crc32fast = "1.4"
+hex = "0.4"
+
+# CLI
+clap = { version = "4", features = ["derive"] }
+indicatif = "0.17"
+anyhow = "1"
+
+# Python bindings (abi3-py38 for forward compatibility with Python 3.8+)
+pyo3 = { version = "0.23", features = ["extension-module", "abi3-py38"] }
+
+# Error handling
+thiserror = "1"
+
+# Parallelism
+rayon = "1.10"
+
+# Networking (optional, for HTTP range requests)
+reqwest = { version = "0.12", default-features = false, features = ["blocking", "rustls-tls"] }
+
+# Async runtime
+tokio = { version = "1.42", features = ["rt-multi-thread", "macros", "io-util", "fs"] }
+
+# GPU acceleration (Candle)
+candle-core = "0.8"
+
+# WebAssembly
+wasm-bindgen = "0.2"
+js-sys = "0.3"
+web-sys = { version = "0.3", features = ["console"] }
+
+# Fast hashing (for fingerprinting)
+md-5 = "0.10"
+
+# Cryptographic signatures
+ed25519-dalek = { version = "2", features = ["std", "rand_core"] }
+rand = "0.8"
+
+# Testing
+criterion = "0.5"
+proptest = "1"
+tempfile = "3"
+
+[profile.release]
+lto = true
+codegen-units = 1
+strip = true

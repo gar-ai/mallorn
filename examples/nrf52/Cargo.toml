@@ -1,0 +1,19 @@
+[package]
+name = "mallorn-nrf52-example"
+version = "0.1.0"
+edition = "2021"
+description = "Mallorn OTA delta update example for nRF52840"
+
+[dependencies]
+cortex-m = "0.7"
+cortex-m-rt = "0.7"
+panic-halt = "0.2"
+nrf52840-hal = "0.18"
+
+# Note: mallorn-lite would be included via C FFI
+# This is a Rust embedded example showing the integration pattern
+
+[profile.release]
+opt-level = "s"
+lto = true
+debug = false

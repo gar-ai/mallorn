@@ -1,0 +1,74 @@
+[package]
+name = "mallorn-core"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Core primitives for Mallorn edge model delta updates"
+
+[features]
+default = []
+async = ["tokio", "reqwest/stream", "futures-util"]
+
+[dependencies]
+# Serialization
+serde = { workspace = true }
+serde_json = { workspace = true }
+
+# Compression
+zstd = { workspace = true }
+lz4_flex = { workspace = true }
+
+# Hashing
+sha2 = { workspace = true }
+crc32fast = { workspace = true }
+hex = { workspace = true }
+
+# Binary handling
+byteorder = { workspace = true }
+
+# Error handling
+thiserror = { workspace = true }
+
+# Parallelism
+rayon = { workspace = true }
+
+# Fast hashing (for fingerprinting)
+md-5 = { workspace = true }
+
+# Cryptographic signatures
+ed25519-dalek = { workspace = true }
+rand = { workspace = true }
+
+# Async support (optional)
+tokio = { workspace = true, optional = true }
+reqwest = { workspace = true, optional = true }
+futures-util = { version = "0.3", optional = true }
+
+[dev-dependencies]
+proptest = { workspace = true }
+criterion = { workspace = true }
+tempfile = { workspace = true }
+
+[[bench]]
+name = "compression"
+harness = false
+
+[[bench]]
+name = "diffpatch"
+harness = false
+
+[[bench]]
+name = "sparse"
+harness = false
+
+[[bench]]
+name = "quantized_delta"
+harness = false
+
+[[bench]]
+name = "fingerprint"
+harness = false
+
+[[bench]]
+name = "parallel"
+harness = false

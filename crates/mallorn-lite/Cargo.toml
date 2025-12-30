@@ -1,0 +1,27 @@
+[package]
+name = "mallorn-lite"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Minimal C library for embedded model delta updates"
+
+[lib]
+name = "mallorn_lite"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[dependencies]
+# LZ4 for embedded-friendly decompression
+lz4_flex = { version = "0.11", default-features = false, features = ["safe-decode"] }
+
+# SHA256 for hash verification (no_std compatible)
+sha2 = { version = "0.10", default-features = false }
+
+[build-dependencies]
+cbindgen = "0.29"
+
+[dev-dependencies]
+tempfile = { workspace = true }
+
+[features]
+default = ["std"]
+std = []

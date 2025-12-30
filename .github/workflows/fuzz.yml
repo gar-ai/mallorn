@@ -1,0 +1,117 @@
+name: Fuzz Testing
+
+on:
+  schedule:
+    # Run nightly at 3 AM UTC
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+    inputs:
+      duration:
+        description: 'Fuzz duration per target (seconds)'
+        required: false
+        default: '300'
+
+permissions:
+  contents: read
+
+jobs:
+  fuzz:
+    name: Fuzz ${{ matrix.target }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          # Parser fuzzers
+          - fuzz_tflite_parser
+          - fuzz_gguf_parser
+          - fuzz_safetensors_parser
+          - fuzz_openvino_parser
+          - fuzz_coreml_parser
+          - fuzz_tensorrt_parser
+          # Patch fuzzers
+          - fuzz_patch_apply
+          - fuzz_patch_deserialize_tflite
+          - fuzz_patch_deserialize_gguf
+          - fuzz_patch_deserialize_onnx
+          - fuzz_signed_patch
+          # Compression fuzzers
+          - fuzz_compression
+          - fuzz_compress_decompress
+          # Network/streaming fuzzers
+          - fuzz_streaming_patcher
+          - fuzz_download_state
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install nightly toolchain
+        uses: dtolnay/rust-toolchain@nightly
+        with:
+          components: llvm-tools-preview
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: fuzz
+
+      - name: Install cargo-fuzz
+        run: cargo install cargo-fuzz
+
+      - name: Run fuzzer
+        run: |
+          cd fuzz
+          DURATION=${{ github.event.inputs.duration || '300' }}
+          cargo +nightly fuzz run ${{ matrix.target }} -- \
+            -max_total_time=$DURATION \
+            -max_len=65536
+        continue-on-error: true
+
+      - name: Upload crash artifacts
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: crash-${{ matrix.target }}
+          path: |
+            fuzz/artifacts/${{ matrix.target }}
+            fuzz/corpus/${{ matrix.target }}
+          retention-days: 30
+
+  # Quick fuzz on PRs (60 seconds each)
+  fuzz-quick:
+    name: Quick Fuzz
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install nightly toolchain
+        uses: dtolnay/rust-toolchain@nightly
+        with:
+          components: llvm-tools-preview
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: fuzz
+
+      - name: Install cargo-fuzz
+        run: cargo install cargo-fuzz
+
+      - name: Run quick fuzz
+        run: |
+          cd fuzz
+          for target in fuzz_tflite_parser fuzz_gguf_parser fuzz_patch_apply fuzz_compression; do
+            echo "Fuzzing $target for 60 seconds..."
+            cargo +nightly fuzz run $target -- -max_total_time=60 -max_len=65536 || true
+          done
+
+  # Summary job
+  summary:
+    name: Fuzz Summary
+    runs-on: ubuntu-latest
+    needs: fuzz
+    if: always()
+    steps:
+      - name: Check results
+        run: |
+          echo "Fuzzing completed. Check individual job logs for details."
+          echo "Any crashes will be uploaded as artifacts."

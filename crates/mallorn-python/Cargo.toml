@@ -1,0 +1,26 @@
+[package]
+name = "mallorn-python"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Python bindings for Mallorn edge model delta updates"
+
+[lib]
+name = "mallorn"
+crate-type = ["cdylib"]
+
+[dependencies]
+mallorn-core = { workspace = true }
+mallorn-tflite = { workspace = true }
+mallorn-gguf = { workspace = true }
+mallorn-onnx = { workspace = true }
+mallorn-safetensors = { workspace = true }
+mallorn-openvino = { workspace = true }
+mallorn-coreml = { workspace = true }
+mallorn-tensorrt = { workspace = true }
+
+pyo3 = { workspace = true }
+hex = { workspace = true }
+
+[dev-dependencies]
+tempfile = { workspace = true }

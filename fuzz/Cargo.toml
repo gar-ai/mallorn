@@ -1,0 +1,147 @@
+[package]
+name = "mallorn-fuzz"
+version = "0.0.0"
+publish = false
+edition = "2021"
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+libfuzzer-sys = "0.4"
+arbitrary = { version = "1", features = ["derive"] }
+
+[dependencies.mallorn-core]
+path = "../crates/mallorn-core"
+
+[dependencies.mallorn-tflite]
+path = "../crates/mallorn-tflite"
+
+[dependencies.mallorn-gguf]
+path = "../crates/mallorn-gguf"
+
+[dependencies.mallorn-onnx]
+path = "../crates/mallorn-onnx"
+
+[dependencies.mallorn-safetensors]
+path = "../crates/mallorn-safetensors"
+
+[dependencies.mallorn-openvino]
+path = "../crates/mallorn-openvino"
+
+[dependencies.mallorn-coreml]
+path = "../crates/mallorn-coreml"
+
+[dependencies.mallorn-tensorrt]
+path = "../crates/mallorn-tensorrt"
+
+# Prevent this from interfering with workspaces
+[workspace]
+members = ["."]
+
+[[bin]]
+name = "fuzz_tflite_parser"
+path = "fuzz_targets/tflite_parser.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "fuzz_gguf_parser"
+path = "fuzz_targets/gguf_parser.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "fuzz_patch_apply"
+path = "fuzz_targets/patch_apply.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "fuzz_compression"
+path = "fuzz_targets/compression.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "fuzz_signed_patch"
+path = "fuzz_targets/signed_patch.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "fuzz_compress_decompress"
+path = "fuzz_targets/compress_decompress.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "fuzz_patch_deserialize_tflite"
+path = "fuzz_targets/patch_deserialize_tflite.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "fuzz_patch_deserialize_gguf"
+path = "fuzz_targets/patch_deserialize_gguf.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "fuzz_patch_deserialize_onnx"
+path = "fuzz_targets/patch_deserialize_onnx.rs"
+test = false
+doc = false
+bench = false
+
+# New format parsers
+[[bin]]
+name = "fuzz_safetensors_parser"
+path = "fuzz_targets/safetensors_parser.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "fuzz_openvino_parser"
+path = "fuzz_targets/openvino_parser.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "fuzz_coreml_parser"
+path = "fuzz_targets/coreml_parser.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "fuzz_tensorrt_parser"
+path = "fuzz_targets/tensorrt_parser.rs"
+test = false
+doc = false
+bench = false
+
+# Streaming/network targets
+[[bin]]
+name = "fuzz_streaming_patcher"
+path = "fuzz_targets/streaming_patcher.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "fuzz_download_state"
+path = "fuzz_targets/download_state.rs"
+test = false
+doc = false
+bench = false

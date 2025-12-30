@@ -1,0 +1,21 @@
+[package]
+name = "mallorn-candle"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "GPU-accelerated compression for Mallorn using Candle"
+readme = "README.md"
+
+[features]
+default = []
+cuda = ["candle-core/cuda"]
+metal = ["candle-core/metal"]
+
+[dependencies]
+mallorn-core = { workspace = true }
+candle-core = "0.8"
+thiserror = { workspace = true }
+rayon = { workspace = true }
+
+[dev-dependencies]
+tempfile = { workspace = true }
