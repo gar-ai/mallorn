@@ -51,6 +51,7 @@ fn detect_format(path: &Path, data: &[u8]) -> Result<ModelFormat> {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
+#[allow(clippy::upper_case_acronyms)]
 enum ModelFormat {
     TFLite,
     GGUF,

@@ -18,6 +18,12 @@ pub enum NetworkError {
     #[error("IO error: {0}")]
     Io(#[from] std::io::Error),
 
+    #[error("IO error: {0}")]
+    IoError(String),
+
+    #[error("Connection failed: {0}")]
+    ConnectionFailed(String),
+
     #[error("Server does not support range requests")]
     RangeNotSupported,
 

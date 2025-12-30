@@ -23,6 +23,7 @@ pub mod parser;
 pub mod patcher;
 
 // Generated protobuf types
+#[allow(clippy::enum_variant_names)]
 mod onnx_proto {
     include!(concat!(env!("OUT_DIR"), "/onnx.rs"));
 }

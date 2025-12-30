@@ -171,7 +171,7 @@ pub async fn check_range_support_async(url: &str) -> Result<bool, NetworkError> 
     let accepts_ranges = response
         .headers()
         .get("accept-ranges")
-        .map(|v| v.to_str().unwrap_or("") == "bytes")
+        .map(|v: &reqwest::header::HeaderValue| v.to_str().unwrap_or("") == "bytes")
         .unwrap_or(false);
 
     Ok(accepts_ranges)

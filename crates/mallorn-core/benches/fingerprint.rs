@@ -15,8 +15,8 @@ fn generate_model_data(size: usize) -> Vec<u8> {
     data[0..4].copy_from_slice(&[0x54, 0x46, 0x4C, 0x33]); // "TFL3"
 
     // Fill with pseudo-random but deterministic data
-    for i in 4..size {
-        data[i] = ((i * 7 + 13) % 256) as u8;
+    for (i, byte) in data.iter_mut().enumerate().skip(4) {
+        *byte = ((i * 7 + 13) % 256) as u8;
     }
     data
 }

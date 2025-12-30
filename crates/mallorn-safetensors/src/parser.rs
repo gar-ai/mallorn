@@ -34,8 +34,10 @@ pub struct SafeTensorsModel {
 impl SafeTensorsModel {
     /// Convert to generic ParsedModel
     pub fn into_parsed_model(self) -> ParsedModel {
-        let mut model_metadata = ModelMetadata::default();
-        model_metadata.custom = self.metadata.clone();
+        let model_metadata = ModelMetadata {
+            custom: self.metadata.clone(),
+            ..Default::default()
+        };
 
         let tensors: Vec<Tensor> = self
             .tensors

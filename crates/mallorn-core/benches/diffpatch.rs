@@ -7,11 +7,7 @@ use mallorn_core::{apply_xor_delta, xor_delta};
 
 /// Generate old tensor data
 fn generate_old_data(size: usize) -> Vec<u8> {
-    let mut data = vec![0u8; size];
-    for i in 0..size {
-        data[i] = ((i * 17) % 256) as u8;
-    }
-    data
+    (0..size).map(|i| ((i * 17) % 256) as u8).collect()
 }
 
 /// Generate new tensor data with specified change ratio

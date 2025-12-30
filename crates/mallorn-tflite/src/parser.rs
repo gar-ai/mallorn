@@ -7,6 +7,9 @@ use byteorder::{LittleEndian, ReadBytesExt};
 use mallorn_core::{DataType, ParseError, QuantizationParams};
 use std::io::Cursor;
 
+/// Return type for parse_model_table: (version, description, subgraph_offsets, buffer_offsets)
+type ModelTableResult = (u32, Option<String>, Vec<usize>, Vec<usize>);
+
 /// Parsed TFLite model
 #[derive(Debug, Clone)]
 pub struct TFLiteModel {
@@ -186,7 +189,7 @@ impl TFLiteParser {
         &self,
         data: &[u8],
         model_pos: usize,
-    ) -> Result<(u32, Option<String>, Vec<usize>, Vec<usize>), ParseError> {
+    ) -> Result<ModelTableResult, ParseError> {
         // Read vtable offset (negative offset from table start)
         let vtable_offset = read_i32(data, model_pos)?;
         let vtable_pos = (model_pos as i32 - vtable_offset) as usize;
@@ -516,9 +519,9 @@ mod tests {
 
     #[test]
     fn test_parser_creation() {
-        let _parser = TFLiteParser::new();
-        // Just verify it can be created
-        assert!(true);
+        let parser = TFLiteParser::new();
+        // Just verify it can be created - the fact that it doesn't panic is the test
+        std::hint::black_box(&parser);
     }
 
     #[test]

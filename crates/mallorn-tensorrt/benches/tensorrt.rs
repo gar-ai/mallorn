@@ -155,7 +155,7 @@ fn bench_config_operations(c: &mut Criterion) {
 
 fn bench_differ_creation(c: &mut Criterion) {
     c.bench_function("differ_creation", |b| {
-        b.iter(|| TensorRTDiffer::new())
+        b.iter(TensorRTDiffer::new)
     });
 
     c.bench_function("differ_with_options", |b| {
@@ -174,7 +174,7 @@ fn bench_differ_creation(c: &mut Criterion) {
 
 fn bench_patcher_creation(c: &mut Criterion) {
     c.bench_function("patcher_creation", |b| {
-        b.iter(|| TensorRTPatcher::new())
+        b.iter(TensorRTPatcher::new)
     });
 }
 

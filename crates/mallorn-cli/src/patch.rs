@@ -45,6 +45,7 @@ fn detect_patch_format(data: &[u8]) -> Result<PatchFormat> {
 }
 
 #[derive(Debug, Clone, Copy)]
+#[allow(clippy::upper_case_acronyms)]
 enum PatchFormat {
     TFLite,
     GGUF,

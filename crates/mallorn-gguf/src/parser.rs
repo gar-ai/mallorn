@@ -268,7 +268,7 @@ impl GGUFParser {
         let version = cursor
             .read_u32::<LittleEndian>()
             .map_err(|e| ParseError::Malformed(e.to_string()))?;
-        if version < 2 || version > 3 {
+        if !(2..=3).contains(&version) {
             return Err(ParseError::UnsupportedVersion(version));
         }
 
@@ -499,7 +499,7 @@ fn calculate_tensor_size(info: &TensorInfo) -> usize {
     }
     let block_size = info.ggml_type.block_size() as u64;
     let type_size = info.ggml_type.type_size() as u64;
-    let n_blocks = (n_elements + block_size - 1) / block_size;
+    let n_blocks = n_elements.div_ceil(block_size);
     (n_blocks * type_size) as usize
 }
 
@@ -511,7 +511,7 @@ impl Default for GGUFParser {
 
 /// Align offset to boundary
 fn align_offset(offset: u64, alignment: u64) -> u64 {
-    (offset + alignment - 1) / alignment * alignment
+    offset.div_ceil(alignment) * alignment
 }
 
 #[cfg(test)]

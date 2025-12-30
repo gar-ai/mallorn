@@ -137,13 +137,13 @@ fn bench_patch_apply(c: &mut Criterion) {
 
     if let (Some(v1), Some(v1_quant)) = (&v1, &v1_quant) {
         let differ = TFLiteDiffer::new();
-        if let Ok(patch) = differ.diff_from_bytes(&v1, &v1_quant) {
+        if let Ok(patch) = differ.diff_from_bytes(v1, v1_quant) {
             let size = v1.len();
             group.throughput(Throughput::Bytes(size as u64));
 
             group.bench_function("apply_v1_to_v1_quant", |b| {
                 let patcher = TFLitePatcher::new();
-                b.iter(|| patcher.apply(&v1, &patch))
+                b.iter(|| patcher.apply(v1, &patch))
             });
         }
     }

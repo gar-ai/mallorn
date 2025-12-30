@@ -314,8 +314,8 @@ impl Default for GGUFPatcher {
 fn find_data_section_start(data: &[u8], alignment: u64) -> usize {
     // GGUF header is at least 24 bytes, data section is aligned
     // This is a simplified heuristic - real implementation would parse header
-    let min_header = 24;
-    let aligned = ((min_header + alignment as usize - 1) / alignment as usize) * alignment as usize;
+    let min_header: usize = 24;
+    let aligned = min_header.div_ceil(alignment as usize) * alignment as usize;
     aligned.min(data.len())
 }
 

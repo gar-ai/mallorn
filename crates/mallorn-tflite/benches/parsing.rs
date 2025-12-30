@@ -30,19 +30,19 @@ fn generate_synthetic_model(num_tensors: usize, tensor_size: usize) -> Vec<u8> {
 
 fn bench_parser_creation(c: &mut Criterion) {
     c.bench_function("parser_creation", |b| {
-        b.iter(|| TFLiteParser::new())
+        b.iter(TFLiteParser::new)
     });
 }
 
 fn bench_differ_creation(c: &mut Criterion) {
     c.bench_function("differ_creation", |b| {
-        b.iter(|| TFLiteDiffer::new())
+        b.iter(TFLiteDiffer::new)
     });
 }
 
 fn bench_patcher_creation(c: &mut Criterion) {
     c.bench_function("patcher_creation", |b| {
-        b.iter(|| TFLitePatcher::new())
+        b.iter(TFLitePatcher::new)
     });
 }
 
